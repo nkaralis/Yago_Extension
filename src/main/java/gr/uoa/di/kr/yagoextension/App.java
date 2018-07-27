@@ -7,6 +7,9 @@ package gr.uoa.di.kr.yagoextension;
  */
 
 import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import gr.uoa.di.kr.yagoextension.filters.GeometryDistance;
 import gr.uoa.di.kr.yagoextension.filters.LabelSimilarity;
 import gr.uoa.di.kr.yagoextension.readers.*;
@@ -24,12 +27,15 @@ public class App {
 	private static Reader datasource;	
 	private static String outputFile;
 	private static int threads = 1;
+	final static Logger logger = LogManager.getLogger(App.class);	
 	
 	public static void main( String[] args ) {
-		
+				
 		parseArgs(args);
-		if(mode.equals("matching"))
+		if(mode.equals("matching")) {
+			logger.info("Starting Matching phase");
 			match();
+		}
 		
 	}
 	
@@ -100,22 +106,21 @@ public class App {
 
 	private static void match() {
 		try {
-			long start = System.currentTimeMillis();
+			logger.info("Started reading data");
 			yago.read();
 			datasource.read();
 			Map<String, Entity> yagoEntities = yago.getEntities();
 			Map<String, Entity> dsEntities = datasource.getEntities();
-			System.out.println(yagoEntities.size());
+			logger.info("Finished reading data");
+			logger.info("Number of Yago Entities: "+yagoEntities.size());
+			logger.info("Number of Datasource Entities: "+dsEntities.size());
 			LabelSimilarity ls = new LabelSimilarity(new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads);
-			System.out.println("Data preparation took: "+(System.currentTimeMillis()-start)+" ms");
-			start = System.currentTimeMillis();
 			MatchesStructure labelMatches = ls.run();
-			System.out.println("Label Similarity filter took: "+(System.currentTimeMillis()-start)+" ms");
-			System.out.println(labelMatches.size());
-			start = System.currentTimeMillis();
+			logger.info("Finished Label Similarity Filter");
+			logger.info("Number of Label Similarity Matches: "+labelMatches.size());
 			MatchesStructure geomMatches = GeometryDistance.filter(labelMatches, yagoEntities, dsEntities);
-			System.out.println("Geometry Distance filter took: "+(System.currentTimeMillis()-start)+" ms");
-			System.out.println(geomMatches.size());
+			logger.info("Finished Geometry Distance Filter");
+			logger.info("Number of Matches: "+geomMatches.size());
 			Writer matchesWriter = new MatchesWriter(outputFile, geomMatches);
 			matchesWriter.write();
 			
