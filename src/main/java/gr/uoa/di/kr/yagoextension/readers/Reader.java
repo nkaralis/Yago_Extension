@@ -1,24 +1,27 @@
 package gr.uoa.di.kr.yagoextension.readers;
 
-import gr.uoa.di.kr.yagoextension.structures.LabelStructure;
+/**
+ * This class is part of the Yago Extension Project
+ * Author: Nikos Karalis 
+ * kr.di.uoa.gr
+ */
+
+import java.util.Map;
+import gr.uoa.di.kr.yagoextension.structures.Entity;
+import java.util.HashMap;
 
 public abstract class Reader {
 	
 	protected String inputFile;
-	protected String type;
-	protected LabelStructure entLabelPairs;
+	protected Map<String, Entity> entities;
 	
 	Reader(String path) {
 		inputFile = path;
-		entLabelPairs = new LabelStructure();
+		entities = new HashMap<String, Entity>();
 	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public LabelStructure getLabels() {
-		return entLabelPairs;
+		
+	public Map<String, Entity> getEntities() {
+		return entities;
 	}
 
 	abstract public void read();

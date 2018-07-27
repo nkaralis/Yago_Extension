@@ -9,17 +9,14 @@ package gr.uoa.di.kr.yagoextension.structures;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-public class LabelMatchesStructure {
+public class LabelMatchesStructure extends MatchesStructure {
 	
-	private Map<String, List<String>> matchesMap;
 	private Map<String, Double> ratios;
 	
 	public LabelMatchesStructure() {
-		matchesMap = new HashMap<String, List<String>>();
+		super();
 		ratios = new HashMap<String, Double>();
 	}
 	
@@ -39,16 +36,4 @@ public class LabelMatchesStructure {
 		}
 	}
 	
-	public Iterator<String> getKeys() {
-		return matchesMap.keySet().iterator();
-	}
-	
-	public List<String> getValueByKey(String key) {
-		return matchesMap.get(key);
-	}
-	
-	public int size(){
-		return matchesMap.size();
-	}
-
 }

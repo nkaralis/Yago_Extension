@@ -10,7 +10,6 @@ public class SHPReader extends Reader {
 
 	public SHPReader(String path) {
 		super(path);
-		type = "Shapefile";
 	}
 
 	@Override
