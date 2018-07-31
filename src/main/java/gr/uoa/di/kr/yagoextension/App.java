@@ -19,6 +19,7 @@ import gr.uoa.di.kr.yagoextension.writers.*;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import org.openstreetmap.osmosis.core.Osmosis;
 
 public class App {
 	
@@ -27,16 +28,16 @@ public class App {
 	private static Reader datasource;	
 	private static String outputFile;
 	private static int threads = 1;
-	final static Logger logger = LogManager.getLogger(App.class);	
+	final static Logger logger = LogManager.getLogger(App.class);
 	
 	public static void main( String[] args ) {
-				
+		
+		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF); // suppress Jena's log4j WARN messages 
 		parseArgs(args);
 		if(mode.equals("matching")) {
 			logger.info("Starting Matching phase");
 			match();
 		}
-		
 	}
 	
 	private static void usage() {

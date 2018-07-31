@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import me.tongfei.progressbar.ProgressBar;
 
 /** 
  *  Finds similar labels between Yago entities and the entities of the second data source.
@@ -28,6 +29,7 @@ public class LabelSimilarity {
 	private MatchesStructure matches;
 	private List<Entity> yago;
 	private List<Entity> ds;
+	ProgressBar pb;
 
 	
 	public LabelSimilarity(List<Entity> yago, List<Entity> ds, int threads) {
@@ -35,6 +37,7 @@ public class LabelSimilarity {
 		this.ds = ds;
 		this.nThreads = threads;
 		this.matches = new LabelMatchesStructure();
+		pb = new ProgressBar("LabelSimilarity", yago.size());
 	}
 	
 	public MatchesStructure run() throws InterruptedException {
@@ -61,6 +64,7 @@ public class LabelSimilarity {
 		}
 		exec.shutdown();
 		exec.awaitTermination(100000, TimeUnit.MINUTES);
+		pb.close(); // terminate progress bar
 		return matches;
 	}
 	
@@ -72,7 +76,6 @@ public class LabelSimilarity {
 		
 		Integer lvDist;
 		Double lvRatio;
-		
 		LevenshteinDistance lv = new LevenshteinDistance();
 		for(Entity yagoEnt : yagoPart) {
 			String yagoKey = yagoEnt.getID();
@@ -89,6 +92,9 @@ public class LabelSimilarity {
 						}
 					}
 				}
+			}
+			synchronized(pb) {
+				pb.step(); // add step to the progress bar
 			}
 		}
 	}
