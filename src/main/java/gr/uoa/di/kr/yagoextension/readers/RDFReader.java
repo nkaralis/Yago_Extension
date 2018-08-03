@@ -32,33 +32,40 @@ public class RDFReader extends Reader {
 	  ResIterator subjIter = model.listSubjects();
 	  while(subjIter.hasNext()) {
 	  	ArrayList<String> subjLabels = new ArrayList<String>();
-	  	boolean flag = false;
+	  	boolean flagG = false;
+	  	boolean flagL = false;
 	    Resource subject = subjIter.next();
 	    String subjWKT = null;
 	    String lati = null;
 	    String longi = null;
-	    String subjID = subject.getURI().split("/")[4];
+	    String subjID = subject.getURI();
 	    /** iterate over the facts of the subject */
 	    StmtIterator facts = model.listStatements(subject, null, (RDFNode) null);
 	    while(facts.hasNext()) {
 	    	Statement triple = facts.next();
 	    	String pred = triple.getPredicate().getLocalName();
-	    	if(pred.contains("label") || pred.contains("hasName"))
+	    	if(pred.toLowerCase().contains("label") || pred.toLowerCase().contains("name")){
 	    		subjLabels.add(triple.getObject().asLiteral().getString());
+	    		flagL = true; // create entity if it has a label and a geometry
+	    	}
 	    	else if(pred.contains("hasGeometry")) { 
 	    		subjWKT = model.listStatements(triple.getObject().asResource(), null, null, null).next().getObject().asLiteral().getString();
-	    		flag = true; // create entity if it contains geometry
+	    		flagG = true; // create entity if it has a label and a geometry
+	    	}
+	    	else if(pred.contains("asWKT")) {
+	    		subjWKT = triple.getObject().asLiteral().getString();
+	    		flagG = true; // create entity if it has a label and a geometry
 	    	}
 	    	else if(pred.contains("hasLatitude")) {
 	    		lati = triple.getObject().asLiteral().getLexicalForm();
-	    		flag = true; // create entity if it contains geometry
+	    		flagG = true; // create entity if it has a label and a geometry
 	    	}
 	    	else if(pred.contains("hasLongitude"))
 	    		longi = triple.getObject().asLiteral().getLexicalForm();
 	    }
 	    
 	    /** create a new entity */
-	    if(flag) {
+	    if(flagG && flagL) {
 	    	try {
 	    		Entity newEntity;
 	    		if(subjWKT == null)

@@ -17,16 +17,21 @@ import gr.uoa.di.kr.yagoextension.structures.Entity;
 import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
 import gr.uoa.di.kr.yagoextension.writers.*;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import org.openstreetmap.osmosis.core.Osmosis;
 
 public class App {
 	
 	private static String mode;
 	private static Reader yago;
-	private static Reader datasource;	
-	private static String outputFile;
+	private static Reader datasource;
+	private static String data;
+	private static String outputMatches;
+	private static String outputMatched;
+	private static String outputUnmatched;
+	private static String matchesFile;
+	private static String origin;
 	private static int threads = 1;
 	final static Logger logger = LogManager.getLogger(App.class);
 	
@@ -34,10 +39,11 @@ public class App {
 		
 		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF); // suppress Jena's log4j WARN messages 
 		parseArgs(args);
-		if(mode.equals("matching")) {
-			logger.info("Starting Matching phase");
+		if(mode.equals("matching")) 
 			match();
-		}
+		else if(mode.equals("generation"))
+			datasetGeneration();
+
 	}
 	
 	private static void usage() {
@@ -45,13 +51,16 @@ public class App {
 		System.out.println("-----Arguments------");
 		System.out.println();
 		System.out.println("matching");
-		System.out.println("\t--yago=<path_to_yago_file> (formats:tsv, ttl, nt)");
-		System.out.println("\t--datasource=<path_to_dataset_file> (e.g. GADM, OSM) (formats:tsv, ttl, nt)");
+		System.out.println("\t--yago=<path_to_yago_file> (formats: tsv, ttl, nt)");
+		System.out.println("\t--datasource=<path_to_dataset_file> (e.g. GADM, OSM) (formats: tsv, ttl, nt)");
 		System.out.println("\t--threads=<number_of_threads> (default=1)");
 		System.out.println("\t--output=<path_to_output_file>");
 		System.out.println("generation");
 		System.out.println("\t--matches=<path_to_matches_file>");
-		System.out.println("\t--output=<path_to_matches_file>");
+		System.out.println("\t--data=<path_to_dataset_file> (e.g. GADM, OSM) (formats: ttl, nt)");
+		System.out.println("\t--matched=<path_to_outputfile_matched>");
+		System.out.println("\t--unmatched=<path_to_outputfile_unmatched>");
+		System.out.println("\t--origin=<datasource> (e.g. GADM, OSM)");
 		System.out.println();
 		System.out.println("Example: yago_extension matching --yago=geoclass_first-order_administrative_division.ttl "
 				+ "--datasource=gadm_admLevel1.nt --output=1level_matches.ttl --threads=4");
@@ -62,7 +71,10 @@ public class App {
 		if(args.length < 1)
 			usage();
 		mode = args[0];
+		/** matching mode */
 		if(mode.equals("matching")) {
+			if (args.length < 4)
+				usage();
 			for(int i = 1; i < args.length; i++) {
 				/** yago */
 				String value = args[i].split("=")[1];
@@ -90,10 +102,30 @@ public class App {
 				}
 				/** output */
 				else if(args[i].contains("--output")) 
-					outputFile = value;
+					outputMatches = value;
 				/** threads */
 				else if(args[i].contains("--threads"))
 					threads = Integer.parseInt(value);
+				else
+					usage();
+			}
+		}
+		/** generation mode */
+		else if(mode.equals("generation")) {
+			if (args.length < 5)
+				usage();
+			for(int i = 1; i < args.length; i++) {
+				String value = args[i].split("=")[1];
+				if(args[i].contains("--matches"))
+					matchesFile = value;
+				else if(args[i].contains("--matched"))
+					outputMatched = value;
+				else if(args[i].contains("--unmatched"))
+					outputUnmatched = value;
+				else if(args[i].contains("--data"))
+					data = value;
+				else if(args[i].contains("--origin"))
+					origin = value;
 				else
 					usage();
 			}
@@ -107,6 +139,7 @@ public class App {
 
 	private static void match() {
 		try {
+			logger.info("Matching phase");
 			logger.info("Started reading data");
 			yago.read();
 			datasource.read();
@@ -122,7 +155,7 @@ public class App {
 			MatchesStructure geomMatches = GeometryDistance.filter(labelMatches, yagoEntities, dsEntities);
 			logger.info("Finished Geometry Distance Filter");
 			logger.info("Number of Matches: "+geomMatches.size());
-			Writer matchesWriter = new MatchesWriter(outputFile, geomMatches);
+			MatchesWriter matchesWriter = new MatchesWriter(outputMatches, geomMatches);
 			matchesWriter.write();
 			
 		} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {
@@ -131,7 +164,14 @@ public class App {
 	}
 	
 	private static void datasetGeneration() {
-		
+		logger.info("Generating new Knowledge Graphs");
+		DatasetWriter ds = new DatasetWriter(outputMatched, outputUnmatched, matchesFile, data, origin);
+		try {
+			ds.write();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		logger.info("Generated new Knowledge Graphs");
 	}
 	
 }
