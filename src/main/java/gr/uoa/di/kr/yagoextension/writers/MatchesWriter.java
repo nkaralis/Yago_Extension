@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -30,20 +31,19 @@ public class MatchesWriter {
 
 	public void write() throws FileNotFoundException, UnsupportedEncodingException {
 		
+		String prefix = "http://yago-knowledge.org/resource/";
 		PrintWriter out = new PrintWriter(outputFile, "UTF-8");
 		Model matchesModel = ModelFactory.createDefaultModel();
-		out.println("@base <http://yago-knowledge.org/resource/>");
-		out.println();
 		/** iterate over the matches and store them into a jena model */
 		for(String x : matches.getKeys()) {
 			Resource subj = ResourceFactory.createResource(x);
-			Resource obj = ResourceFactory.createResource(matches.getValueByKey(x).get(0).replace("<","").replace(">", "")); // remove < and > that are read from tsv files
+			Resource obj = ResourceFactory.createResource(prefix+matches.getValueByKey(x).get(0).replace("<","").replace(">", "")); // remove < and > that are read from tsv files
 			Property pred = ResourceFactory.createProperty("http://www.w3.org/2002/07/owl#sameAs");
 			Statement s = ResourceFactory.createStatement(subj, pred, obj);
 			matchesModel.add(s);
 		}
 		/** write the jena model to the output file */
-		matchesModel.write(out, "TTL");
+		matchesModel.write(out, "NTRIPLES");
 		out.close();
 	}
 
