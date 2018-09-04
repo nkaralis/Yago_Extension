@@ -10,6 +10,8 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 import gr.uoa.di.kr.yagoextension.structures.Entity;
 import gr.uoa.di.kr.yagoextension.structures.LabelMatchesStructure;
 import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
+import gr.uoa.di.kr.yagoextension.util.LabelProcessing;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,14 +32,26 @@ public class LabelSimilarity {
 	private List<Entity> yago;
 	private List<Entity> ds;
 	ProgressBar pb;
+	private String preprocess;
 
 	
-	public LabelSimilarity(List<Entity> yago, List<Entity> ds, int threads) {
+	public LabelSimilarity(List<Entity> yago, List<Entity> ds, int threads, String origin) {
 		this.yago = yago;
 		this.ds = ds;
 		this.nThreads = threads;
 		this.matches = new LabelMatchesStructure();
 		pb = new ProgressBar("LabelSimilarity", yago.size());
+		/** pre-processing of labels for the official datasets */
+		if(origin != null) {
+			if(origin.equals("kallikratis"))
+				preprocess = "kallikratis";
+			else if(origin.equals("osientity"))
+				preprocess = "osi";
+			else if(origin.equals("osentity"))
+				preprocess = "os";
+		}
+		else
+			preprocess = null;
 	}
 	
 	public MatchesStructure run() throws InterruptedException {
@@ -74,8 +88,8 @@ public class LabelSimilarity {
 		 * Output: Matches produced by the label similarity filter
 		 */
 		
-		Integer lvDist;
-		Double lvRatio;
+		int lvDist;
+		double lvRatio; 
 		LevenshteinDistance lv = new LevenshteinDistance();
 		for(Entity yagoEnt : yagoPart) {
 			String yagoKey = yagoEnt.getID();
@@ -84,7 +98,15 @@ public class LabelSimilarity {
 				for(String yagoLabel : yagoEnt.getLabels()) {
 					for(String dsLabel : dsEnt.getLabels()) {
 						lvDist = lv.apply(yagoLabel, dsLabel);
-						lvRatio = levenshteinRatio(lvDist, Math.max(yagoLabel.length(), dsLabel.length()));
+						lvRatio = levenshteinRatio(lvDist, Math.max(yagoLabel.length(), dsLabel.length()));;
+						if(preprocess.equals("kallikratis")){
+							String ylProc = LabelProcessing.processYagoLabel(yagoLabel);
+							String dlProc = LabelProcessing.processKallikratisLabel(dsLabel);
+							int tempLvDist = lv.apply(ylProc, dlProc);
+							double tempLvRatio = levenshteinRatio(tempLvDist, Math.max(ylProc.length(), dlProc.length()));
+							if(tempLvRatio > lvRatio)
+								lvRatio = tempLvRatio;
+						}
 						if(lvRatio >= threshold) {
 							synchronized(matches) {
 								matches.addMatch(yagoKey, dsKey, lvRatio);

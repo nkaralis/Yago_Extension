@@ -79,7 +79,7 @@ public class App {
 				/** yago */
 				String value = args[i].split("=")[1];
 				if(args[i].contains("--yago")) {
-					if(value.contains(".ttl") || value.contains(".nt")){
+					if(value.contains(".ttl") || value.contains(".nt") || value.contains(".n3")){
 						yago = new RDFReader(value);
 					}
 					else if(value.contains(".tsv")) {
@@ -90,7 +90,7 @@ public class App {
 				}
 				/** gadm, osm, etc. */
 				else if(args[i].contains("--datasource")) {
-					if(value.contains(".ttl") || value.contains(".nt")){
+					if(value.contains(".ttl") || value.contains(".nt") || value.contains(".n3")){
 						datasource = new RDFReader(value);
 					}
 					else if(value.contains(".tsv")) {
@@ -139,6 +139,7 @@ public class App {
 
 	private static void match() {
 		try {
+			System.setProperty("org.geotools.referencing.forceXY", "true"); // force (long lat) in geotools 
 			logger.info("Matching phase");
 			logger.info("Started reading data");
 			yago.read();
@@ -148,7 +149,7 @@ public class App {
 			logger.info("Finished reading data");
 			logger.info("Number of Yago Entities: "+yagoEntities.size());
 			logger.info("Number of Datasource Entities: "+dsEntities.size());
-			LabelSimilarity ls = new LabelSimilarity(new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads);
+			LabelSimilarity ls = new LabelSimilarity(new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, "kallikratis");
 			MatchesStructure labelMatches = ls.run();
 			logger.info("Finished Label Similarity Filter");
 			logger.info("Number of Label Similarity Matches: "+labelMatches.size());
