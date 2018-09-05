@@ -33,6 +33,7 @@ public class App {
 	private static String matchesFile;
 	private static String origin;
 	private static int threads = 1;
+	private static String preprocess = null;
 	final static Logger logger = LogManager.getLogger(App.class);
 	
 	public static void main( String[] args ) {
@@ -55,6 +56,7 @@ public class App {
 		System.out.println("\t--datasource=<path_to_dataset_file> (e.g. GADM, OSM) (formats: tsv, ttl, nt)");
 		System.out.println("\t--threads=<number_of_threads> (default=1)");
 		System.out.println("\t--output=<path_to_output_file>");
+		System.out.println("\t--preprocess=<data_source> (OPTIONAL) (options: kallikratis, os, osi)");
 		System.out.println("generation");
 		System.out.println("\t--matches=<path_to_matches_file>");
 		System.out.println("\t--data=<path_to_dataset_file> (e.g. GADM, OSM) (formats: ttl, nt)");
@@ -106,6 +108,8 @@ public class App {
 				/** threads */
 				else if(args[i].contains("--threads"))
 					threads = Integer.parseInt(value);
+				else if(args[i].contains("--preprocess"))
+					preprocess = value;
 				else
 					usage();
 			}
@@ -149,7 +153,7 @@ public class App {
 			logger.info("Finished reading data");
 			logger.info("Number of Yago Entities: "+yagoEntities.size());
 			logger.info("Number of Datasource Entities: "+dsEntities.size());
-			LabelSimilarity ls = new LabelSimilarity(new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, "kallikratis");
+			LabelSimilarity ls = new LabelSimilarity(new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, preprocess);
 			MatchesStructure labelMatches = ls.run();
 			logger.info("Finished Label Similarity Filter");
 			logger.info("Number of Label Similarity Matches: "+labelMatches.size());
