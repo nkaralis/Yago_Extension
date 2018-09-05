@@ -97,11 +97,13 @@ public class LabelSimilarity {
 				String dsKey = dsEnt.getID();
 				for(String yagoLabel : yagoEnt.getLabels()) {
 					for(String dsLabel : dsEnt.getLabels()) {
-						lvDist = lv.apply(yagoLabel, dsLabel);
-						lvRatio = levenshteinRatio(lvDist, Math.max(yagoLabel.length(), dsLabel.length()));;
-						if(preprocess.equals("kallikratis")){
+						int upperCaseSim = lv.apply(yagoLabel, dsLabel);
+						int lowerCaseSim = lv.apply(yagoLabel.toUpperCase(), dsLabel);
+						lvDist = (upperCaseSim < lowerCaseSim) ? upperCaseSim : lowerCaseSim; 
+						lvRatio = levenshteinRatio(lvDist, Math.max(yagoLabel.length(), dsLabel.length()));
+						if(preprocess != null) {
 							String ylProc = LabelProcessing.processYagoLabel(yagoLabel);
-							String dlProc = LabelProcessing.processKallikratisLabel(dsLabel);
+							String dlProc = LabelProcessing.processDataSourceLabel(dsLabel, preprocess);
 							int tempLvDist = lv.apply(ylProc, dlProc);
 							double tempLvRatio = levenshteinRatio(tempLvDist, Math.max(ylProc.length(), dlProc.length()));
 							if(tempLvRatio > lvRatio)

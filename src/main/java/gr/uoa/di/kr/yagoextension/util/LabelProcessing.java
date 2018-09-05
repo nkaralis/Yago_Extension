@@ -2,15 +2,23 @@ package gr.uoa.di.kr.yagoextension.util;
 
 public class LabelProcessing {
 	
-	public static String processKallikratisLabel(String label) {
+	public static String processDataSourceLabel(String label, String source) {
+		
+		if(source.equals("kallikratis"))
+			return processKallikratisLabel(label);
+		else 
+			return label;
+		
+	}
+	
+	private static String processKallikratisLabel(String label) {
 		
 		if(label.contains("ΔΗΜΟΣ "))
-			label = label.replace("ΔHMOΣ ", "");
+			label = label.replace("ΔΗΜΟΣ ", "");
 		else if(label.contains("ΔHMOTIKH ΕNOTHTA "))
 			label = label.replace("ΔHMOTIKH ΕNOTHTA ", "");
 		else if(label.contains("ΠΕΡΙΦΕΡΕΙΑ "))
 			label = label.replace("ΠΕΡΙΦΕΡΕΙΑ ", "");
-		
 		return label;
 	}
 	
