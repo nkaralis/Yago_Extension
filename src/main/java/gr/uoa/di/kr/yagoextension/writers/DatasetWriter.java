@@ -15,6 +15,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.util.ResourceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,7 +59,8 @@ public class DatasetWriter {
 
 	private void writeFromFile() throws IOException {
 		
-		String yagoextensionNS = "http://kr.di.uoa.gr/yago-extension/";
+		String yagoextensionRNS = "http://kr.di.uoa.gr/yago-extension/resource/";
+		String yagoextensionONS = "http://kr.di.uoa.gr/yago-extension/ontology/";
 		
 		logger.info("Started reading matches and data");
 		/** store matches and data into jena models */
@@ -74,12 +76,15 @@ public class DatasetWriter {
 		FileOutputStream outMatched = new FileOutputStream(outputFileMatched);
 		FileOutputStream outUnmatched = new FileOutputStream(outputFileUnmatched);
 		
+		/** OGC asWKT property */
+		Property asWKT = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "asWKT");
+		
 		/** iterate over data */
 		ResIterator subjIter = modelData.listSubjects();
 		while(subjIter.hasNext()) {
 			
 			Resource dataEnt = subjIter.next();
-			if(modelData.contains(null, null, dataEnt)) continue; // skip geometry resources. such resources are handled later
+			if(modelData.contains(null, null, dataEnt) && modelData.contains(dataEnt, asWKT)) continue; // skip geometry resources. such resources are handled later
 			RDFNode yagoEnt = null;
 			if(modelMatches.listObjectsOfProperty(dataEnt, null).hasNext()) 
 				yagoEnt = modelMatches.listObjectsOfProperty(dataEnt, null).next();
@@ -93,27 +98,40 @@ public class DatasetWriter {
 				if(Arrays.asList(namespaces).contains(pred.getNameSpace())){
 					/** extract asWKT triple in case there is a hasGeometry fact */
 					if(pred.getLocalName().equals("hasGeometry")) {
-						Property asWKT = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "asWKT");
 						RDFNode wkt = modelData.listObjectsOfProperty(obj.asResource(), null).next();
-						obj = ResourceFactory.createResource(yagoextensionNS+obj.asResource().getLocalName());
+						obj = ResourceFactory.createResource(yagoextensionRNS+obj.asResource().getLocalName());
 						if(yagoEnt == null)
 							triplesUnmatched.add(new Triple(obj.asNode(), asWKT.asNode(), wkt.asNode()));
 						else
 							triplesMatched.add(new Triple(obj.asNode(), asWKT.asNode(), wkt.asNode()));
 					}
-					if(yagoEnt == null)
-						triplesUnmatched.add(new Triple(ResourceFactory.createResource(yagoextensionNS+entPrefix+dataEnt.getLocalName()).asNode(), pred.asNode(), obj.asNode()));
-					else
-						triplesMatched.add(new Triple(yagoEnt.asNode(), pred.asNode(), obj.asNode()));
+					/** change the namespace of the class */
+					if(yagoEnt == null) {
+						/** change the namespace of the class in order to follow the Yago schema */
+						if(pred.getLocalName().equals("type") && !Arrays.asList(namespaces).contains(obj.asResource().getNameSpace()))
+							triplesUnmatched.add(new Triple(ResourceFactory.createResource(yagoextensionONS+entPrefix+dataEnt.getLocalName()).asNode(), 
+									pred.asNode(), ResourceFactory.createResource(yagoextensionONS+obj.asNode().getLocalName()).asNode()));
+						else
+							triplesUnmatched.add(new Triple(
+									ResourceFactory.createResource(yagoextensionRNS+entPrefix+dataEnt.getLocalName()).asNode(), pred.asNode(), obj.asNode()));
+					}
+					else {
+						/** change the namespace of the class in order to follow the Yago schema */
+						if(pred.getLocalName().equals("type") && !Arrays.asList(namespaces).contains(obj.asResource().getNameSpace()))
+							triplesMatched.add(new Triple(yagoEnt.asNode(), 
+									pred.asNode(), ResourceFactory.createResource(yagoextensionONS+obj.asNode().getLocalName()).asNode()));
+						else
+							triplesMatched.add(new Triple(yagoEnt.asNode(), pred.asNode(), obj.asNode()));
+					}
 				}
 				/** set new namespace for the predicates of the dataset */
 				else {
 					if(yagoEnt == null)
-						triplesUnmatched.add(new Triple(ResourceFactory.createResource(yagoextensionNS+entPrefix+dataEnt.getLocalName()).asNode(),
-								ResourceFactory.createProperty(yagoextensionNS, pred.getLocalName()).asNode(), obj.asNode()));
+						triplesUnmatched.add(new Triple(ResourceFactory.createResource(yagoextensionRNS+entPrefix+dataEnt.getLocalName()).asNode(),
+								ResourceFactory.createProperty(yagoextensionRNS, pred.getLocalName()).asNode(), obj.asNode()));
 					else
 						triplesMatched.add(new Triple(
-								yagoEnt.asNode(), ResourceFactory.createProperty(yagoextensionNS, pred.getLocalName()).asNode(), obj.asNode()));
+								yagoEnt.asNode(), ResourceFactory.createProperty(yagoextensionRNS, pred.getLocalName()).asNode(), obj.asNode()));
 				}
 			}
 			
