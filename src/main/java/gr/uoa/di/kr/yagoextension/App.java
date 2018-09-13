@@ -15,6 +15,7 @@ import gr.uoa.di.kr.yagoextension.filters.LabelSimilarity;
 import gr.uoa.di.kr.yagoextension.readers.*;
 import gr.uoa.di.kr.yagoextension.structures.Entity;
 import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
+import gr.uoa.di.kr.yagoextension.util.Blacklist;
 import gr.uoa.di.kr.yagoextension.writers.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class App {
 	private static String origin;
 	private static int threads = 1;
 	private static String preprocess = null;
+	private static String blacklist = null;
 	final static Logger logger = LogManager.getLogger(App.class);
 	
 	public static void main( String[] args ) {
@@ -108,8 +110,11 @@ public class App {
 				/** threads */
 				else if(args[i].contains("--threads"))
 					threads = Integer.parseInt(value);
+				/** preprocess */
 				else if(args[i].contains("--preprocess"))
 					preprocess = value;
+				else if(args[i].contains("--blacklist"))
+					blacklist = value;
 				else
 					usage();
 			}
@@ -151,9 +156,13 @@ public class App {
 			Map<String, Entity> yagoEntities = yago.getEntities();
 			Map<String, Entity> dsEntities = datasource.getEntities();
 			logger.info("Finished reading data");
+			/** remove entities that are already matched */
+			if(blacklist != null)
+				Blacklist.removeMatchedEntities(yagoEntities, dsEntities, blacklist);
 			logger.info("Number of Yago Entities: "+yagoEntities.size());
 			logger.info("Number of Datasource Entities: "+dsEntities.size());
-			LabelSimilarity ls = new LabelSimilarity(new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, preprocess);
+			LabelSimilarity ls = new LabelSimilarity(
+					new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, preprocess);
 			MatchesStructure labelMatches = ls.run();
 			logger.info("Finished Label Similarity Filter");
 			logger.info("Number of Label Similarity Matches: "+labelMatches.size());
