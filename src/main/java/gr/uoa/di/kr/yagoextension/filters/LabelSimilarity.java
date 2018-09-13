@@ -31,7 +31,7 @@ public class LabelSimilarity {
 	private MatchesStructure matches;
 	private List<Entity> yago;
 	private List<Entity> ds;
-	ProgressBar pb;
+	private ProgressBar pb;
 	private String preprocess;
 
 	
@@ -42,16 +42,7 @@ public class LabelSimilarity {
 		this.matches = new LabelMatchesStructure();
 		pb = new ProgressBar("LabelSimilarity", yago.size());
 		/** pre-processing of labels for the official datasets */
-		if(origin != null) {
-			if(origin.equals("kallikratis"))
-				preprocess = "kallikratis";
-			else if(origin.equals("osientity"))
-				preprocess = "osi";
-			else if(origin.equals("osentity"))
-				preprocess = "os";
-		}
-		else
-			preprocess = null;
+		preprocess = origin;
 	}
 	
 	public MatchesStructure run() throws InterruptedException {
@@ -87,7 +78,6 @@ public class LabelSimilarity {
 		 * Input: Sublist of yago list
 		 * Output: Matches produced by the label similarity filter
 		 */
-		
 		int lvDist;
 		double lvRatio; 
 		LevenshteinDistance lv = new LevenshteinDistance();
