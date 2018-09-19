@@ -55,16 +55,17 @@ public class App {
 		System.out.println();
 		System.out.println("matching");
 		System.out.println("\t--yago=<path_to_yago_file> (formats: tsv, ttl, nt)");
-		System.out.println("\t--datasource=<path_to_dataset_file> (e.g. GADM, OSM) (formats: tsv, ttl, nt)");
+		System.out.println("\t--datasource=<path_to_dataset_file> (e.g., GADM, OSM) (formats: tsv, ttl, nt)");
 		System.out.println("\t--threads=<number_of_threads> (default=1)");
 		System.out.println("\t--output=<path_to_output_file>");
 		System.out.println("\t--preprocess=<data_source> (OPTIONAL) (options: kallikratis, os, osi)");
+		System.out.println("\t--blacklist=<matches_file> (OPTIONAL)");
 		System.out.println("generation");
 		System.out.println("\t--matches=<path_to_matches_file>");
 		System.out.println("\t--data=<path_to_dataset_file> (e.g. GADM, OSM) (formats: ttl, nt)");
 		System.out.println("\t--matched=<path_to_outputfile_matched>");
 		System.out.println("\t--unmatched=<path_to_outputfile_unmatched>");
-		System.out.println("\t--origin=<datasource> (e.g. GADM, OSM)");
+		System.out.println("\t--origin=<datasource> (e.g., GADM, OSM)");
 		System.out.println();
 		System.out.println("Example: yago_extension matching --yago=geoclass_first-order_administrative_division.ttl "
 				+ "--datasource=gadm_admLevel1.nt --output=1level_matches.ttl --threads=4");
