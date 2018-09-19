@@ -8,9 +8,9 @@ public class LabelProcessing {
 			return processKallikratisLabel(label);
 		else if(source.equals("os"))
 			return processOSLabel(label);
-		else if(source.equals("osni"))
-			return processOSNILabel(label);
-			return label;
+		else if(source.equals("osi"))
+			return processOSILabel(label);
+		return label;
 		
 	}
 	
@@ -26,6 +26,7 @@ public class LabelProcessing {
 	}
 	
 	public static String processOSLabel(String label) {
+		
 		if(label.contains("District"))
 			label = label.replace("District", "");
 		if(label.contains("County"))
@@ -50,12 +51,24 @@ public class LabelProcessing {
 			label = label.split(" - ")[1];
 		return label.toUpperCase().trim();
 	}
-	
-	private static String processOSNILabel(String label) {
 		
+	private static String processOSILabel(String label) {
 		
-		
-		return label;
+		if(label.contains("MUNICIPAL DISTRICT OF "))
+			label = label.replace("MUNICIPAL DISTRICT OF ", "");
+		if(label.contains(" RURAL AREA"))
+			label = label.replace(" RURAL AREA", "");
+		if(label.contains(" COUNTY COUNCIL"))
+			label = label.replace(" COUNTY COUNCIL", "");
+		if(label.contains(" COUNTY"))
+			label = label.replace(" COUNTY", "");
+		if(label.contains(" COUNCIL"))
+			label = label.replace(" COUNCIL", "");
+		if(label.contains(" \\(ED"))
+			label = label.split(" \\(ED")[0];
+		if(label.equals("\n"))
+			label = label.split("\n")[0];
+		return label.toUpperCase().trim();
 	}
 	
 	public static String processYagoLabel(String label) {

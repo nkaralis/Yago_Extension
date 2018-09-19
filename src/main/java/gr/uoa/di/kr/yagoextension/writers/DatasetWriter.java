@@ -80,6 +80,8 @@ public class DatasetWriter {
 		Property asWKT = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "asWKT");
 		/** OGC hasGeometry property */
 		Property hasGeo = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "hasGeometry");
+		/** RDF type property */
+		Property type = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
 		
 		/** iterate over data */
 		ResIterator subjIter = modelData.listSubjects();
@@ -167,7 +169,7 @@ public class DatasetWriter {
 				}
 				
 				else if(source.toLowerCase().equals("os")) {
-					/** check if the predicate is part of the OrdnanceSurvey ontology */
+					/** check if the predicate is part of the Ordnance Survey ontology */
 					if(predLN.equals("hasOS_AreaCode") || predLN.equals("hasOS_Description") || 
 							predLN.equals("hasOS_ID") || predLN.equals("hasOS_Name") ) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
@@ -175,12 +177,71 @@ public class DatasetWriter {
 					}
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = hasGeo;
-						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_"+dataEnt.getLocalName());
+						String ln = dataEnt.getLocalName();
+						/** keep the id for the geometry */
+						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_"+ln.split("_")[ln.split("_").length-1]);
 						newObj = geom;
 						if(yagoEnt != null)
 							triplesMatched.add(new Triple(geom.asNode(), asWKT.asNode(), obj.asNode()));
 						else
 							triplesUnmatched.add(new Triple(geom.asNode(), asWKT.asNode(), obj.asNode()));
+					}
+					else
+						continue;
+				}
+				
+				else if(source.toLowerCase().equals("osni")) {
+					/** check if the predicate is part of the Ordnance Survey Northern Ireland ontology */
+					if(predLN.equals("hasOSNI_Area") || predLN.equals("hasOSNI_AreaSqKM") || 
+							predLN.equals("hasOSNI_ID") || predLN.equals("hasOSNI_Name") || predLN.equals("hasOSNI_Perimeter") ) {
+						newPred = ResourceFactory.createProperty(extensionONS, predLN);
+						newObj = obj;						
+					}
+					else if(predLN.equals("hasOSNI_Class")) {
+						newPred = type;
+						newObj = ResourceFactory.createResource(extensionONS+obj.asLiteral().getString());
+					}
+					else if(predLN.equals("hasGeometry") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
+						newPred = pred;
+						newObj = ResourceFactory.createResource(extensionRNS+obj.asResource().getLocalName());
+						RDFNode wkt = modelData.listObjectsOfProperty(obj.asResource(), asWKT).next();
+						if(yagoEnt != null)
+							triplesMatched.add(new Triple(newObj.asNode(), asWKT.asNode(), wkt.asNode()));
+						else
+							triplesUnmatched.add(new Triple(newObj.asNode(), asWKT.asNode(), wkt.asNode()));
+					}
+					else
+						continue;
+				}
+				
+				else if(source.toLowerCase().equals("osi")) {
+					/** check if the predicate is part of the Ordnance Survey Ireland ontology */
+					if(predLN.equals("type") && predNS.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#") && 
+							!obj.asResource().getLocalName().equals("Feature") && !obj.asResource().getLocalName().equals("Geometry")) {
+						newPred = type;
+						newObj = ResourceFactory.createResource(extensionONS+obj.asResource().getLocalName());
+						Property hasID = ResourceFactory.createProperty(extensionONS, "hasOSI_ID");
+						RDFNode osiID = ResourceFactory.createPlainLiteral(dataEnt.getLocalName());
+						if(yagoEnt != null)
+							triplesMatched.add(new Triple(yagoEnt.asNode(), hasID.asNode(), osiID.asNode()));
+						else
+							triplesUnmatched.add(new Triple(ResourceFactory.createResource(extensionRNS+source+"entity_"+dataEnt.getLocalName()).asNode(), 
+									hasID.asNode(), osiID.asNode()));
+					}
+					else if(predLN.equals("label") && predNS.equals("http://www.w3.org/2000/01/rdf-schema#")) {
+						newPred = ResourceFactory.createProperty(extensionONS, "hasOSI_Name");
+						newObj = obj;
+					}
+					else if(predLN.equals("hasGeometry") && predNS.equals("http://www.opengis.net/ont/geosparql#") && 
+							modelData.listObjectsOfProperty(obj.asResource(), asWKT).hasNext()) {
+						newPred = pred;
+						String osiID = dataEnt.getLocalName();
+						newObj = ResourceFactory.createResource(extensionRNS+"Geometry_"+osiID);
+						RDFNode wkt = modelData.listObjectsOfProperty(obj.asResource(), asWKT).next();
+						if(yagoEnt != null)
+							triplesMatched.add(new Triple(newObj.asNode(), asWKT.asNode(), wkt.asNode()));
+						else
+							triplesUnmatched.add(new Triple(newObj.asNode(), asWKT.asNode(), wkt.asNode()));
 					}
 					else
 						continue;
@@ -192,48 +253,7 @@ public class DatasetWriter {
 				else
 					triplesUnmatched.add(new Triple(ResourceFactory.createResource(extensionRNS+source+"entity_"+dataEnt.getLocalName()).asNode(), 
 							newPred.asNode(), newObj.asNode()));
-				
-				
-				/** do not change the namespace of common predicated (e.g. rdf:type, geo:hasGeometry, etc.) */
-//				if(Arrays.asList(namespaces).contains(pred.getNameSpace())){
-//					/** extract asWKT triple in case there is a hasGeometry fact */
-//					if(pred.getLocalName().equals("hasGeometry")) {
-//						RDFNode wkt = modelData.listObjectsOfProperty(obj.asResource(), null).next();
-//						obj = ResourceFactory.createResource(yagoextensionRNS+obj.asResource().getLocalName());
-//						if(yagoEnt == null)
-//							triplesUnmatched.add(new Triple(obj.asNode(), asWKT.asNode(), wkt.asNode()));
-//						else
-//							triplesMatched.add(new Triple(obj.asNode(), asWKT.asNode(), wkt.asNode()));
-//					}
-//					/** change the namespace of the class */
-//					if(yagoEnt == null) {
-//						/** change the namespace of the class in order to follow the Yago schema */
-//						if(pred.getLocalName().equals("type") && !Arrays.asList(namespaces).contains(obj.asResource().getNameSpace()))
-//							triplesUnmatched.add(new Triple(ResourceFactory.createResource(yagoextensionONS+entPrefix+dataEnt.getLocalName()).asNode(), 
-//									pred.asNode(), ResourceFactory.createResource(yagoextensionONS+obj.asNode().getLocalName()).asNode()));
-//						else
-//							triplesUnmatched.add(new Triple(
-//									ResourceFactory.createResource(yagoextensionRNS+entPrefix+dataEnt.getLocalName()).asNode(), pred.asNode(), obj.asNode()));
-//					}
-//					else {
-//						/** change the namespace of the class in order to follow the Yago schema */
-//						if(pred.getLocalName().equals("type") && !Arrays.asList(namespaces).contains(obj.asResource().getNameSpace()))
-//							triplesMatched.add(new Triple(yagoEnt.asNode(), 
-//									pred.asNode(), ResourceFactory.createResource(yagoextensionONS+obj.asNode().getLocalName()).asNode()));
-//						else
-//							triplesMatched.add(new Triple(yagoEnt.asNode(), pred.asNode(), obj.asNode()));
-//					}
-//				}
-//				/** set new namespace for the predicates of the dataset */
-//				else {
-//					if(yagoEnt == null)
-//						triplesUnmatched.add(new Triple(ResourceFactory.createResource(yagoextensionRNS+entPrefix+dataEnt.getLocalName()).asNode(),
-//								ResourceFactory.createProperty(yagoextensionRNS, pred.getLocalName()).asNode(), obj.asNode()));
-//					else
-//						triplesMatched.add(new Triple(
-//								yagoEnt.asNode(), ResourceFactory.createProperty(yagoextensionRNS, pred.getLocalName()).asNode(), obj.asNode()));
-//				}
-//			}
+
 			}
 		}
 		

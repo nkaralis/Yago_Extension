@@ -68,7 +68,7 @@ public class LabelSimilarity {
 			start = end;
 		}
 		exec.shutdown();
-		exec.awaitTermination(100000, TimeUnit.MINUTES);
+		exec.awaitTermination(10000000, TimeUnit.MINUTES);
 		pb.close(); // terminate progress bar
 		return matches;
 	}
