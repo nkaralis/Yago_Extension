@@ -48,7 +48,7 @@ public class RDFReader extends Reader {
 	    		subjLabels.add(triple.getObject().asLiteral().getString());
 	    		flagL = true; // create entity if it has a label and a geometry
 	    	}
-	    	else if(pred.contains("hasGeometry")) { 
+	    	else if(pred.contains("hasGeometry") && model.listStatements(triple.getObject().asResource(), null, null, null).hasNext()) { 
 	    		subjWKT = model.listStatements(triple.getObject().asResource(), null, null, null).next().getObject().asLiteral().getString();
 	    		flagG = true; // create entity if it has a label and a geometry
 	    	}

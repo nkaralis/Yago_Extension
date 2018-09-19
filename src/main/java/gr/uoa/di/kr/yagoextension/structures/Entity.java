@@ -31,7 +31,6 @@ public class Entity {
 		/** transform EPSG:2100 to EPSG:4326 */
 		else if(wkt.contains("http://www.opengis.net/def/crs/EPSG/0/2100")) {
 			this.geom = this.wktReader.read(wkt);
-//			this.geom.setSRID(2100);
 			try {
 				CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:2100");
 				CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
@@ -43,6 +42,8 @@ public class Entity {
 				System.err.println("Transformation of the geometry failed!");
 			}
 		}
+		else
+			this.geom = this.wktReader.read(wkt);
 		this.labels = new HashSet<String>();
 		for (String x : labels) this.labels.add(x);
 	}
