@@ -89,6 +89,7 @@ public class DatasetWriter {
 			
 			Resource dataEnt = subjIter.next();
 			if(modelData.contains(null, null, dataEnt) && modelData.contains(dataEnt, asWKT)) continue; // skip geometry resources. such resources are handled later
+			String localName = dataEnt.getURI().split("/")[dataEnt.getURI().split("/").length-1];
 			RDFNode yagoEnt = null;
 			if(modelMatches.listObjectsOfProperty(dataEnt, null).hasNext()) 
 				yagoEnt = modelMatches.listObjectsOfProperty(dataEnt, null).next();
@@ -137,7 +138,7 @@ public class DatasetWriter {
 					}
 					else if(predLN.equals("asWKT")) {
 						newPred = hasGeo;
-						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_"+dataEnt.getLocalName());
+						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_"+localName);
 						newObj = geom;
 						if(yagoEnt != null)
 							triplesMatched.add(new Triple(geom.asNode(), asWKT.asNode(), obj.asNode()));
@@ -157,7 +158,7 @@ public class DatasetWriter {
 					}
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = hasGeo;
-						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_"+dataEnt.getLocalName());
+						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_"+localName.split("_")[localName.split("_").length-1]);
 						newObj = geom;
 						if(yagoEnt != null)
 							triplesMatched.add(new Triple(geom.asNode(), asWKT.asNode(), obj.asNode()));
@@ -177,9 +178,8 @@ public class DatasetWriter {
 					}
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = hasGeo;
-						String ln = dataEnt.getLocalName();
 						/** keep the id for the geometry */
-						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_"+ln.split("_")[ln.split("_").length-1]);
+						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_"+localName.split("_")[localName.split("_").length-1]);
 						newObj = geom;
 						if(yagoEnt != null)
 							triplesMatched.add(new Triple(geom.asNode(), asWKT.asNode(), obj.asNode()));
@@ -251,7 +251,7 @@ public class DatasetWriter {
 				if(yagoEnt != null) 
 					triplesMatched.add(new Triple(yagoEnt.asNode(), newPred.asNode(), newObj.asNode()));
 				else
-					triplesUnmatched.add(new Triple(ResourceFactory.createResource(extensionRNS+source+"entity_"+dataEnt.getLocalName()).asNode(), 
+					triplesUnmatched.add(new Triple(ResourceFactory.createResource(extensionRNS+source+"entity_"+localName).asNode(), 
 							newPred.asNode(), newObj.asNode()));
 
 			}

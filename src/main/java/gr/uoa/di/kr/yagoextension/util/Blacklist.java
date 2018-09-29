@@ -13,7 +13,6 @@ public class Blacklist {
 
 		Model matches = RDFDataMgr.loadModel(matchesFile);
 		StmtIterator stmts = matches.listStatements();
-		System.out.println(yago.size()+"|"+ds.size());
 		while(stmts.hasNext()) {
 			Statement stmt = stmts.next();
 			String subj = stmt.getSubject().getURI();
@@ -22,7 +21,6 @@ public class Blacklist {
 			yago.remove("<"+obj+">");
 			ds.remove(subj);
 		}
-		System.out.println(yago.size()+"|"+ds.size());
 	}
 
 }
