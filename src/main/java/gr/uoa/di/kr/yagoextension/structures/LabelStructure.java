@@ -1,7 +1,7 @@
 package gr.uoa.di.kr.yagoextension.structures;
 
 /**
- * This class is part of the Yago Extension Project
+ * This class is part of the YAGO Extension Project
  * Author: Nikos Karalis 
  * kr.di.uoa.gr
  */
@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 /** 
  * An object of this class contains all labels for every entity 
- * of the given data source (e.g. Yago, GADM, etc.)
+ * of the given data source (e.g. YAGO, GADM, etc.)
  */
 
 public class LabelStructure {

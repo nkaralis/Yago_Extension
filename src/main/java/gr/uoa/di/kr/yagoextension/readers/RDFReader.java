@@ -1,7 +1,7 @@
 package gr.uoa.di.kr.yagoextension.readers;
 
 /**
- * This class is part of the Yago Extension Project
+ * This class is part of the YAGO Extension Project
  * Author: Nikos Karalis 
  * kr.di.uoa.gr
  */
@@ -26,8 +26,7 @@ public class RDFReader extends Reader {
 	public void read() {
 				
 		/** create the Model and read the data */	
-	  Model model = RDFDataMgr.loadModel(inputFile);
-	  
+	  Model model = RDFDataMgr.loadModel(inputFile); 
 	  /** iterate over all subjects */
 	  ResIterator subjIter = model.listSubjects();
 	  while(subjIter.hasNext()) {

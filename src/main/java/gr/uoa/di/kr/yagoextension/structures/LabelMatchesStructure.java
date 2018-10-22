@@ -1,7 +1,7 @@
 package gr.uoa.di.kr.yagoextension.structures;
 
 /**
- * This class is part of the Yago Extension Project
+ * This class is part of the YAGO Extension Project
  * Author: Nikos Karalis 
  * kr.di.uoa.gr
  */
@@ -14,7 +14,6 @@ import java.util.Map;
 public class LabelMatchesStructure extends MatchesStructure {
 	
 	private Map<String, Double> ratios;
-	
 	public LabelMatchesStructure() {
 		super();
 		ratios = new HashMap<String, Double>();

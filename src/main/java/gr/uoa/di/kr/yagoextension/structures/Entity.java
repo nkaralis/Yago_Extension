@@ -1,5 +1,11 @@
 package gr.uoa.di.kr.yagoextension.structures;
 
+/**
+ * This class is part of the YAGO Extension Project
+ * Author: Nikos Karalis 
+ * kr.di.uoa.gr
+ */
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +32,6 @@ public class Entity {
 		this.id = id;
 		if(wkt.contains("<http://www.opengis.net/def/crs/EPSG/0/4326>")) {
 			this.geom = this.wktReader.read(wkt.replace("<http://www.opengis.net/def/crs/EPSG/0/4326>", ""));
-//			this.geom.setSRID(4326);
 		}
 		/** transform EPSG:2100 to EPSG:4326 */
 		else if(wkt.contains("http://www.opengis.net/def/crs/EPSG/0/2100")) {

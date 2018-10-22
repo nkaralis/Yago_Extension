@@ -1,5 +1,11 @@
 package gr.uoa.di.kr.yagoextension.util;
 
+/**
+ * This class is part of the YAGO Extension Project
+ * Author: Nikos Karalis 
+ * kr.di.uoa.gr
+ */
+
 import java.util.Map;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
@@ -22,5 +28,4 @@ public class Blacklist {
 			ds.remove(subj);
 		}
 	}
-
 }

@@ -1,9 +1,14 @@
 package gr.uoa.di.kr.yagoextension.writers;
 
+/**
+ * This class is part of the YAGO Extension Project
+ * Author: Nikos Karalis 
+ * kr.di.uoa.gr
+ */
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Model;
@@ -15,7 +20,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.util.ResourceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,9 +34,6 @@ public class DatasetWriter {
 	private MatchesStructure matches;
 	private String source;
 	final static Logger logger = LogManager.getLogger(DatasetWriter.class);
-	/** common RDF namespaces */
-	final private String[] namespaces = {"http://www.opengis.net/ont/geosparql#", "http://www.w3.org/1999/02/22-rdf-syntax-ns#", 
-	                                     "http://www.w3.org/2000/01/rdf-schema#", "http://www.w3.org/2002/07/owl#"};
 
 	public DatasetWriter(String pathMatched, String pathUnmatched, String matches, String data, String source) {
 		this.outputFileMatched = pathMatched;

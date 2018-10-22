@@ -1,7 +1,7 @@
 package gr.uoa.di.kr.yagoextension;
 
 /**
- * This class is part of the Yago Extension Project
+ * This class is part of the YAGO Extension Project
  * Author: Nikos Karalis 
  * kr.di.uoa.gr
  */
@@ -50,6 +50,7 @@ public class App {
 	}
 	
 	private static void usage() {
+		
 		System.out.println("---Yago Extension---");
 		System.out.println("-----Arguments------");
 		System.out.println();
@@ -73,6 +74,7 @@ public class App {
 	}
 	
 	private static void parseArgs(String args[]) {
+		
 		if(args.length < 1)
 			usage();
 		mode = args[0];
@@ -148,6 +150,7 @@ public class App {
 	}
 
 	private static void match() {
+		
 		try {
 			System.setProperty("org.geotools.referencing.forceXY", "true"); // force (long lat) in geotools 
 			logger.info("Matching phase");
@@ -179,6 +182,7 @@ public class App {
 	}
 	
 	private static void datasetGeneration() {
+		
 		logger.info("Generating new Knowledge Graphs");
 		DatasetWriter ds = new DatasetWriter(outputMatched, outputUnmatched, matchesFile, data, origin);
 		try {

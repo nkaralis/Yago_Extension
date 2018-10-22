@@ -1,5 +1,11 @@
 package gr.uoa.di.kr.yagoextension.util;
 
+/**
+ * This class is part of the YAGO Extension Project
+ * Author: Nikos Karalis 
+ * kr.di.uoa.gr
+ */
+
 public class LabelProcessing {
 	
 	public static String processDataSourceLabel(String label, String source) {
@@ -10,8 +16,8 @@ public class LabelProcessing {
 			return processOSLabel(label);
 		else if(source.equals("osi"))
 			return processOSILabel(label);
-		return label;
 		
+		return label;
 	}
 	
 	private static String processKallikratisLabel(String label) {
@@ -22,6 +28,7 @@ public class LabelProcessing {
 			label = label.replace("ΔHMOTIKH ΕNOTHTA ", "");
 		else if(label.contains("ΠΕΡΙΦΕΡΕΙΑ "))
 			label = label.replace("ΠΕΡΙΦΕΡΕΙΑ ", "");
+		
 		return label;
 	}
 	
@@ -49,6 +56,7 @@ public class LabelProcessing {
 			label = label.replace("Ward", "");
 		if(label.contains(" - "))
 			label = label.split(" - ")[1];
+		
 		return label.toUpperCase().trim();
 	}
 		
@@ -68,6 +76,7 @@ public class LabelProcessing {
 			label = label.split(" \\(ED")[0];
 		if(label.equals("\n"))
 			label = label.split("\n")[0];
+		
 		return label.toUpperCase().trim();
 	}
 	
