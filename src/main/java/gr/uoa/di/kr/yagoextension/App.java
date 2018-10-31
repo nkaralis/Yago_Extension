@@ -36,6 +36,8 @@ public class App {
 	private static int threads = 1;
 	private static String preprocess = null;
 	private static String blacklist = null;
+	private static Reader extendedKG;
+	private static String outputTopology;
 	final static Logger logger = LogManager.getLogger(App.class);
 	
 	public static void main( String[] args ) {
@@ -46,6 +48,8 @@ public class App {
 			match();
 		else if(mode.equals("generation"))
 			datasetGeneration();
+		else if(mode.equals("topology"))
+			generateTopologicalRelations();
 
 	}
 	
@@ -142,6 +146,16 @@ public class App {
 					usage();
 			}
 		}
+		/** topology mode */
+		else if(mode.equals("topology")) {
+			for(int i = 1; i < args.length; i++) {
+				String value = args[i].split("=")[1];
+				if(args[i].contains("--kg"))
+					extendedKG = new RDFReader(value);
+				else if(args[i].contains("--output"))
+					outputTopology = value;
+			}
+		}
 		else {
 			usage();
 			System.exit(0);
@@ -178,6 +192,7 @@ public class App {
 			
 		} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
+			System.exit(2);
 		}		
 	}
 	
@@ -189,8 +204,26 @@ public class App {
 			ds.write();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(2);
 		}
 		logger.info("Generated new Knowledge Graphs");
+	}
+	
+	private static void generateTopologicalRelations() {
+		
+		logger.info("Generation of Topological Relations");
+		logger.info("Started reading data");
+		extendedKG.read();
+		logger.info("Generating Topological Relations");
+		Map<String, Entity> extEntities = extendedKG.getEntities();
+		TopologicalRelationsWriter topoWriter = new TopologicalRelationsWriter(extEntities, outputTopology);
+		try {
+			topoWriter.write();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.exit(2);
+		}
+		logger.info("Generated Topological Relations");
 	}
 	
 }
