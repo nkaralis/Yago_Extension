@@ -22,8 +22,9 @@ public class TopologicalRelationsWriter {
 
 	private String outputFile;
 	private Map<String, Entity> entities;
-	private Property borders = ResourceFactory.createProperty("http://kr.di.uoa.gr/yago-extension/ontology/", "bordersWith");
-	private Property belongs = ResourceFactory.createProperty("http://kr.di.uoa.gr/yago-extension/ontology/", "belongsTo");
+	private Property ec = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "rcc8-ec");
+	private Property tpp = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "rcc8-tpp");
+	private Property ntpp = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "rcc8-ntpp");
 	private ProgressBar pb;
 	
 	public TopologicalRelationsWriter(Map<String, Entity> ent, String path) {
@@ -50,17 +51,23 @@ public class TopologicalRelationsWriter {
 				/** RCC8 EC*/
 				if(geom1.touches(geom2)) {
 					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key1).asNode(), borders.asNode(), ResourceFactory.createResource(key2).asNode()));
+							new Triple(ResourceFactory.createResource(key1).asNode(), ec.asNode(), ResourceFactory.createResource(key2).asNode()));
 					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key2).asNode(), borders.asNode(), ResourceFactory.createResource(key1).asNode()));
+							new Triple(ResourceFactory.createResource(key2).asNode(), ec.asNode(), ResourceFactory.createResource(key1).asNode()));
 				}
 				/** RCC8 TPP & nTPP */
-				else if(geom1.contains(geom2))
+				else if(geom2.within(geom1)) {
 					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key2).asNode(), belongs.asNode(), ResourceFactory.createResource(key1).asNode()));					
-				else if(geom2.contains(geom1))
+							new Triple(ResourceFactory.createResource(key2).asNode(), tpp.asNode(), ResourceFactory.createResource(key1).asNode()));					
 					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key1).asNode(), belongs.asNode(), ResourceFactory.createResource(key2).asNode()));
+							new Triple(ResourceFactory.createResource(key2).asNode(), ntpp.asNode(), ResourceFactory.createResource(key1).asNode()));
+				}
+				else if(geom1.within(geom2)) {
+					topoRelations.add(
+							new Triple(ResourceFactory.createResource(key1).asNode(), tpp.asNode(), ResourceFactory.createResource(key2).asNode()));
+					topoRelations.add(
+							new Triple(ResourceFactory.createResource(key1).asNode(), ntpp.asNode(), ResourceFactory.createResource(key2).asNode()));
+				}
 			}
 			pb.step();
 		}
