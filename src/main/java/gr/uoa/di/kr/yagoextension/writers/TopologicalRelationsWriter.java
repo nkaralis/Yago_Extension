@@ -51,7 +51,7 @@ public class TopologicalRelationsWriter {
 				/** run geospatial predicates in order to generate topological relations */
 				/** RCC8 EC*/
 				try {
-				boolean touches = geom1.touches(geom2);
+					boolean touches = geom1.touches(geom2);
 					if(touches) {
 						topoRelations.add(
 								new Triple(ResourceFactory.createResource(key1).asNode(), ec.asNode(), ResourceFactory.createResource(key2).asNode()));
