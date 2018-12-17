@@ -15,6 +15,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.RDFDataMgr;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.TopologyException;
 import gr.uoa.di.kr.yagoextension.structures.Entity;
 import me.tongfei.progressbar.ProgressBar;
 
@@ -42,31 +43,36 @@ public class TopologicalRelationsWriter {
 		
 		/** iterate over the entities to find topological relations */
 		for(String key1 : ents) {
-			Geometry geom1 = entities.get(key1).getGeometry().buffer(0.0);
+			Geometry geom1 = entities.get(key1).getGeometry();
 			seen.add(key1);
 			for(String key2 : ents) {
 				if(seen.contains(key2)) continue;
-				Geometry geom2 = entities.get(key2).getGeometry().buffer(0.0);
+				Geometry geom2 = entities.get(key2).getGeometry();
 				/** run geospatial predicates in order to generate topological relations */
 				/** RCC8 EC*/
-				if(geom1.touches(geom2)) {
-					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key1).asNode(), ec.asNode(), ResourceFactory.createResource(key2).asNode()));
-					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key2).asNode(), ec.asNode(), ResourceFactory.createResource(key1).asNode()));
-				}
-				/** RCC8 TPP & nTPP */
-				else if(geom2.within(geom1)) {
-					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key2).asNode(), tpp.asNode(), ResourceFactory.createResource(key1).asNode()));					
-					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key2).asNode(), ntpp.asNode(), ResourceFactory.createResource(key1).asNode()));
-				}
-				else if(geom1.within(geom2)) {
-					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key1).asNode(), tpp.asNode(), ResourceFactory.createResource(key2).asNode()));
-					topoRelations.add(
-							new Triple(ResourceFactory.createResource(key1).asNode(), ntpp.asNode(), ResourceFactory.createResource(key2).asNode()));
+				try {
+				boolean touches = geom1.touches(geom2);
+					if(touches) {
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(key1).asNode(), ec.asNode(), ResourceFactory.createResource(key2).asNode()));
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(key2).asNode(), ec.asNode(), ResourceFactory.createResource(key1).asNode()));
+					}
+					/** RCC8 TPP & nTPP */
+					else if(geom2.within(geom1)) {
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(key2).asNode(), tpp.asNode(), ResourceFactory.createResource(key1).asNode()));					
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(key2).asNode(), ntpp.asNode(), ResourceFactory.createResource(key1).asNode()));
+					}
+					else if(geom1.within(geom2)) {
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(key1).asNode(), tpp.asNode(), ResourceFactory.createResource(key2).asNode()));
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(key1).asNode(), ntpp.asNode(), ResourceFactory.createResource(key2).asNode()));
+					}
+				}	catch(TopologyException e) {
+					continue;
 				}
 			}
 			pb.step();
