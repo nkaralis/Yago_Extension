@@ -180,7 +180,7 @@ public class App {
 			logger.info("Number of Yago Entities: "+yagoEntities.size());
 			logger.info("Number of Datasource Entities: "+dsEntities.size());
 			LabelSimilarity ls = new LabelSimilarity(
-					new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, preprocess);
+					new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, preprocess, "jarowinkler");
 			MatchesStructure labelMatches = ls.run();
 			logger.info("Finished Label Similarity Filter");
 			logger.info("Number of Label Similarity Matches: "+labelMatches.size());

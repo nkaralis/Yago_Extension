@@ -6,12 +6,11 @@ package gr.uoa.di.kr.yagoextension.filters;
  * kr.di.uoa.gr
  */
 
-import org.apache.commons.text.similarity.LevenshteinDistance;
 import gr.uoa.di.kr.yagoextension.structures.Entity;
 import gr.uoa.di.kr.yagoextension.structures.LabelMatchesStructure;
 import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
 import gr.uoa.di.kr.yagoextension.util.LabelProcessing;
-
+import gr.uoa.di.kr.yagoextension.util.StringSimilarity;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,13 +32,15 @@ public class LabelSimilarity {
 	private List<Entity> ds;
 	private ProgressBar pb;
 	private String preprocess;
+	private String strSimilarity;
 
 	
-	public LabelSimilarity(List<Entity> yago, List<Entity> ds, int threads, String origin) {
+	public LabelSimilarity(List<Entity> yago, List<Entity> ds, int threads, String origin, String method) {
 		this.yago = yago;
 		this.ds = ds;
 		this.nThreads = threads;
 		this.matches = new LabelMatchesStructure();
+		this.strSimilarity = method;
 		pb = new ProgressBar("LabelSimilarity", yago.size());
 		/** pre-processing of labels for the official datasets */
 		preprocess = origin;
@@ -78,30 +79,26 @@ public class LabelSimilarity {
 		 * Input: Sublist of yago list
 		 * Output: Matches produced by the label similarity filter
 		 */
-		int lvDist;
-		double lvRatio; 
-		LevenshteinDistance lv = new LevenshteinDistance();
+		double similarity; 
 		for(Entity yagoEnt : yagoPart) {
 			String yagoKey = yagoEnt.getID();
 			for(Entity dsEnt : ds) {
 				String dsKey = dsEnt.getID();
 				for(String yagoLabel : yagoEnt.getLabels()) {
 					for(String dsLabel : dsEnt.getLabels()) {
-						int upperCaseSim = lv.apply(yagoLabel, dsLabel);
-						int lowerCaseSim = lv.apply(yagoLabel.toUpperCase(), dsLabel);
-						lvDist = (upperCaseSim < lowerCaseSim) ? upperCaseSim : lowerCaseSim; 
-						lvRatio = levenshteinRatio(lvDist, Math.max(yagoLabel.length(), dsLabel.length()));
+						double lowerCaseSim = StringSimilarity.similarity(yagoLabel, dsLabel, strSimilarity);
+						double upperCaseSim = StringSimilarity.similarity(yagoLabel, dsLabel, strSimilarity);
+						similarity = (upperCaseSim > lowerCaseSim) ? upperCaseSim : lowerCaseSim;
 						if(preprocess != null) {
 							String ylProc = LabelProcessing.processYagoLabel(yagoLabel);
 							String dlProc = LabelProcessing.processDataSourceLabel(dsLabel, preprocess);
-							int tempLvDist = lv.apply(ylProc, dlProc);
-							double tempLvRatio = levenshteinRatio(tempLvDist, Math.max(ylProc.length(), dlProc.length()));
-							if(tempLvRatio > lvRatio)
-								lvRatio = tempLvRatio;
+							double tempSim = StringSimilarity.similarity(ylProc, dlProc, strSimilarity);
+							if(tempSim > similarity)
+								similarity = tempSim;
 						}
-						if(lvRatio >= threshold) {
+						if(similarity >= threshold) {
 							synchronized(matches) {
-								matches.addMatch(yagoKey, dsKey, lvRatio);
+								matches.addMatch(yagoKey, dsKey, similarity);
 							}
 						}
 					}
