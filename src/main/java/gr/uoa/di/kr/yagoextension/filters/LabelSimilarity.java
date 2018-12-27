@@ -109,9 +109,5 @@ public class LabelSimilarity {
 			}
 		}
 	}
-	
-	private static double levenshteinRatio(int dist, int len) {
-		return 1-((double)dist/len);
-	}
 
 }

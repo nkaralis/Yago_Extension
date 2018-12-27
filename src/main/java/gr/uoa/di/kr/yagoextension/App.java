@@ -154,6 +154,8 @@ public class App {
 					extendedKG = new RDFReader(value);
 				else if(args[i].contains("--output"))
 					outputTopology = value;
+				else if(args[i].contains("--threads"))
+					threads = Integer.parseInt(value);
 			}
 		}
 		else {
@@ -216,10 +218,10 @@ public class App {
 		extendedKG.read();
 		logger.info("Generating Topological Relations");
 		Map<String, Entity> extEntities = extendedKG.getEntities();
-		TopologicalRelationsWriter topoWriter = new TopologicalRelationsWriter(extEntities, outputTopology);
+		TopologicalRelationsWriter topoWriter = new TopologicalRelationsWriter(new ArrayList<Entity>(extEntities.values()), outputTopology, threads);
 		try {
 			topoWriter.write();
-		} catch (FileNotFoundException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 			System.exit(2);
 		}
