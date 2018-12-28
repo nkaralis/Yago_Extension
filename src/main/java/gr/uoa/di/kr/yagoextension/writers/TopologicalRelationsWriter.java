@@ -22,17 +22,18 @@ public class TopologicalRelationsWriter {
 	private List<Entity> entities;
 	private Property touches;
 	private Property within;
-	private List<Triple> topoRelations;
+//	private List<Triple> topoRelations;
 	private int kgsize;
 	private ProgressBar pb;
 	private int nThreads;
 	private Integer position;
+	private FileOutputStream out;
 	
 	public TopologicalRelationsWriter(List<Entity> ents, String path, int threads) {
 		this.entities = ents;
 		this.kgsize = ents.size();
 		this.outputFile = path;
-		this.topoRelations = new ArrayList<Triple>();
+//		this.topoRelations = new ArrayList<Triple>();
 		this.nThreads = threads;
 		pb = new ProgressBar("TopologicalRelations", kgsize);
 		touches = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "sf-touches");
@@ -43,7 +44,7 @@ public class TopologicalRelationsWriter {
 	public void write() throws InterruptedException, IOException {
 		
 		/** file that in which the results will be written */
-		FileOutputStream out = new FileOutputStream(outputFile);
+		out = new FileOutputStream(outputFile);
 		/** initialized thread pool and threads */
 		ExecutorService exec = Executors.newFixedThreadPool(nThreads);
 		for(int i = 0; i < nThreads; i++) {
@@ -56,19 +57,18 @@ public class TopologicalRelationsWriter {
 		}
 		exec.shutdown();
 		exec.awaitTermination(10000000, TimeUnit.MINUTES);
-		/** write to file and the close it */
+		/** terminate progress bar and close file */
 		pb.close();
-		RDFDataMgr.writeTriples(out, topoRelations.iterator());
 		out.close();
 	}
 	
 	private void spatialOps() {
-		
+		List<Triple> topoRelations = new ArrayList<Triple>();
 		int current = 0;
 		while(true) {
 			/** check if the end of the list has been reached by one of the threads */
 			synchronized(position) {
-				if(position >= kgsize)
+				if(position >= kgsize - 1)
 					break;
 				else {
 					current = position;
@@ -88,54 +88,46 @@ public class TopologicalRelationsWriter {
 				/** sf-touches */
 				try {
 					if(geom.touches(qGeom)) {
-						synchronized(topoRelations) {
-							topoRelations.add(
-									new Triple(ResourceFactory.createResource(id).asNode(), touches.asNode(), ResourceFactory.createResource(qID).asNode()));
-							topoRelations.add(
-									new Triple(ResourceFactory.createResource(qID).asNode(), touches.asNode(), ResourceFactory.createResource(id).asNode()));
-						}
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(id).asNode(), touches.asNode(), ResourceFactory.createResource(qID).asNode()));
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(qID).asNode(), touches.asNode(), ResourceFactory.createResource(id).asNode()));
 					}
 				} catch(TopologyException e) {
 					if(geom.buffer(0.0).touches(qGeom.buffer(0.0))) {
-						synchronized(topoRelations) {
-							topoRelations.add(
-									new Triple(ResourceFactory.createResource(id).asNode(), touches.asNode(), ResourceFactory.createResource(qID).asNode()));
-							topoRelations.add(
-									new Triple(ResourceFactory.createResource(qID).asNode(), touches.asNode(), ResourceFactory.createResource(id).asNode()));
-						}
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(id).asNode(), touches.asNode(), ResourceFactory.createResource(qID).asNode()));
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(qID).asNode(), touches.asNode(), ResourceFactory.createResource(id).asNode()));
 					}
 				}
+				/** sf-within */
 				try {
 					if(geom.within(qGeom)) {
-						synchronized(topoRelations) {
-							topoRelations.add(
-									new Triple(ResourceFactory.createResource(id).asNode(), within.asNode(), ResourceFactory.createResource(qID).asNode()));
-						}
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(id).asNode(), within.asNode(), ResourceFactory.createResource(qID).asNode()));
 					}
 					else if(qGeom.within(geom)) {
-						synchronized(topoRelations) {
-							topoRelations.add(
-								new Triple(ResourceFactory.createResource(qID).asNode(), within.asNode(), ResourceFactory.createResource(id).asNode()));
-						}
+						topoRelations.add(
+							new Triple(ResourceFactory.createResource(qID).asNode(), within.asNode(), ResourceFactory.createResource(id).asNode()));
 					}
 				} catch(TopologyException e) {
 					if(geom.buffer(0.0).within(qGeom.buffer(0.0))) {
-						synchronized(topoRelations) {
-							topoRelations.add(
-									new Triple(ResourceFactory.createResource(id).asNode(), within.asNode(), ResourceFactory.createResource(qID).asNode()));
-						}
+						topoRelations.add(
+								new Triple(ResourceFactory.createResource(id).asNode(), within.asNode(), ResourceFactory.createResource(qID).asNode()));
 					}
 					else if(qGeom.buffer(0.0).within(geom.buffer(0.0))) {
-						synchronized(topoRelations) {
-							topoRelations.add(
-								new Triple(ResourceFactory.createResource(qID).asNode(), within.asNode(), ResourceFactory.createResource(id).asNode()));
-						}
+						topoRelations.add(
+							new Triple(ResourceFactory.createResource(qID).asNode(), within.asNode(), ResourceFactory.createResource(id).asNode()));
 					}
 				}
 			}
 			synchronized(pb) {
 				pb.step();
 			}
+		}
+		synchronized(out) {
+			RDFDataMgr.writeTriples(out, topoRelations.iterator());
 		}
 	}
 	
