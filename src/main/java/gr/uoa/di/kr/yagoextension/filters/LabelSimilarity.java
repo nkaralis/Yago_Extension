@@ -86,9 +86,9 @@ public class LabelSimilarity {
 				String dsKey = dsEnt.getID();
 				for(String yagoLabel : yagoEnt.getLabels()) {
 					for(String dsLabel : dsEnt.getLabels()) {
-						double lowerCaseSim = StringSimilarity.similarity(yagoLabel, dsLabel, strSimilarity);
-						double upperCaseSim = StringSimilarity.similarity(yagoLabel, dsLabel, strSimilarity);
-						similarity = (upperCaseSim > lowerCaseSim) ? upperCaseSim : lowerCaseSim;
+						double def = StringSimilarity.similarity(yagoLabel, dsLabel, strSimilarity);
+						double upperCaseSim = StringSimilarity.similarity(yagoLabel.toUpperCase(), dsLabel.toUpperCase(), strSimilarity);
+						similarity = (upperCaseSim > def) ? upperCaseSim : def;
 						if(preprocess != null) {
 							String ylProc = LabelProcessing.processYagoLabel(yagoLabel);
 							String dlProc = LabelProcessing.processDataSourceLabel(dsLabel, preprocess);
