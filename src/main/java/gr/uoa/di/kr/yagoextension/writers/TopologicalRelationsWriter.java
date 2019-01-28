@@ -11,10 +11,11 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.TopologyException;
 import gr.uoa.di.kr.yagoextension.structures.Entity;
-import me.tongfei.progressbar.ProgressBar;
 
 public class TopologicalRelationsWriter {
 
@@ -22,20 +23,17 @@ public class TopologicalRelationsWriter {
 	private List<Entity> entities;
 	private Property touches;
 	private Property within;
-//	private List<Triple> topoRelations;
 	private int kgsize;
-	private ProgressBar pb;
 	private int nThreads;
 	private Integer position;
 	private FileOutputStream out;
+	final static Logger logger = LogManager.getLogger(TopologicalRelationsWriter.class);
 	
 	public TopologicalRelationsWriter(List<Entity> ents, String path, int threads) {
 		this.entities = ents;
 		this.kgsize = ents.size();
 		this.outputFile = path;
-//		this.topoRelations = new ArrayList<Triple>();
 		this.nThreads = threads;
-		pb = new ProgressBar("TopologicalRelations", kgsize);
 		touches = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "sf-touches");
 		within = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "sf-within");
 		position = 0;
@@ -58,7 +56,6 @@ public class TopologicalRelationsWriter {
 		exec.shutdown();
 		exec.awaitTermination(10000000, TimeUnit.MINUTES);
 		/** terminate progress bar and close file */
-		pb.close();
 		out.close();
 	}
 	
@@ -74,11 +71,14 @@ public class TopologicalRelationsWriter {
 					current = position;
 					position ++;
 				}
+				if(position % 1000 == 0)
+					logger.info("Processed "+position+"/"+kgsize+" elements.");
 			}
 			/** Generate topological relations between current entity and the entities that are stored in positions > current.
 			 *  This way, we avoid duplicate results .
 			 */
 			Entity ent = entities.get(current);
+			logger.debug("Processing "+ent.getID());
 			Geometry geom = ent.getGeometry();
 			String id = ent.getID();
 			for(int i = current + 1; i < kgsize; i++) {
@@ -122,11 +122,12 @@ public class TopologicalRelationsWriter {
 					}
 				}
 			}
-			synchronized(pb) {
-				pb.step();
-			}
+//			synchronized(pb) {
+//				pb.step();
+//			}
 		}
 		synchronized(out) {
+			logger.info("Writing results to file");
 			RDFDataMgr.writeTriples(out, topoRelations.iterator());
 		}
 	}
