@@ -43,7 +43,7 @@ public class App {
 	
 	public static void main( String[] args ) {
 		
-		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF); // suppress Jena's log4j WARN messages 
+		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF); // suppress Jena's log4j WARN messages
 		parseArgs(args);
 		switch (mode) {
 			case "matching":
@@ -89,7 +89,7 @@ public class App {
 			usage();
 		mode = args[0];
 		/** matching mode */
-		switch (mode) {
+		switch(mode) {
 			case "matching":
 				if (args.length < 4)
 					usage();
@@ -182,6 +182,17 @@ public class App {
 				Blacklist.removeMatchedEntities(yagoEntities, dsEntities, blacklist);
 			logger.info("Number of Yago Entities: "+yagoEntities.size());
 			logger.info("Number of Datasource Entities: "+dsEntities.size());
+			switch(strSimMethod) {
+				case "jarowinkler" :
+					logger.info("Using JaroWinkler similarity");
+					break;
+				case "substring" :
+					logger.info("Using SubString similarity");
+					break;
+				default:
+					logger.info("Using Levenshtein Similarity");
+					break;
+			}
 			LabelSimilarity ls = new LabelSimilarity(
 					new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, preprocess, strSimMethod);
 			MatchesStructure labelMatches = ls.run();

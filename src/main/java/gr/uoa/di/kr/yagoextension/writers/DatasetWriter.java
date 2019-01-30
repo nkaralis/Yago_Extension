@@ -33,7 +33,7 @@ public class DatasetWriter {
 	private String data;
 	private MatchesStructure matches;
 	private String source;
-	final static Logger logger = LogManager.getLogger(DatasetWriter.class);
+	final static Logger logger = LogManager.getRootLogger();
 
 	public DatasetWriter(String pathMatched, String pathUnmatched, String matches, String data, String source) {
 		this.outputFileMatched = pathMatched;

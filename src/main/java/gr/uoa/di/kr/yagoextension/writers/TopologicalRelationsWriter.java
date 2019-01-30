@@ -27,7 +27,7 @@ public class TopologicalRelationsWriter {
 	private int nThreads;
 	private Integer position;
 	private FileOutputStream out;
-	final static Logger logger = LogManager.getLogger(TopologicalRelationsWriter.class);
+	final static Logger rootLogger = LogManager.getRootLogger();
 	
 	public TopologicalRelationsWriter(List<Entity> ents, String path, int threads) {
 		this.entities = ents;
@@ -40,7 +40,7 @@ public class TopologicalRelationsWriter {
 	}
 	
 	public void write() throws InterruptedException, IOException {
-		
+
 		/** file that in which the results will be written */
 		out = new FileOutputStream(outputFile);
 		/** initialized thread pool and threads */
@@ -72,13 +72,13 @@ public class TopologicalRelationsWriter {
 					position ++;
 				}
 				if(position % 1000 == 0)
-					logger.info("Processed "+position+"/"+kgsize+" elements.");
+					rootLogger.info("Processed "+position+"/"+kgsize+" elements.");
 			}
 			/** Generate topological relations between current entity and the entities that are stored in positions > current.
 			 *  This way, we avoid duplicate results .
 			 */
 			Entity ent = entities.get(current);
-			logger.debug("Processing "+ent.getID());
+			rootLogger.debug("Processing "+ent.getID());
 			Geometry geom = ent.getGeometry();
 			String id = ent.getID();
 			for(int i = current + 1; i < kgsize; i++) {
@@ -127,7 +127,7 @@ public class TopologicalRelationsWriter {
 //			}
 		}
 		synchronized(out) {
-			logger.info("Writing results to file");
+			rootLogger.info("Writing results to file");
 			RDFDataMgr.writeTriples(out, topoRelations.iterator());
 		}
 	}
