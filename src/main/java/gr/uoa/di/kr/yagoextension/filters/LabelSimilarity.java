@@ -2,7 +2,7 @@ package gr.uoa.di.kr.yagoextension.filters;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis
  * kr.di.uoa.gr
  */
 
@@ -42,14 +42,12 @@ public class LabelSimilarity {
 		this.matches = new LabelMatchesStructure();
 		this.strSimilarity = method;
 		pb = new ProgressBar("LabelSimilarity", yago.size());
-		/** pre-processing of labels for the official datasets */
+		/* pre-processing of labels for the official datasets */
 		preprocess = origin;
 	}
 	
 	public MatchesStructure run() throws InterruptedException {
-		/**
-		 * Initialize threads and split the list of yago entities in nThreads parts  
-		 */
+		/* Initialize threads and split the list of yago entities in nThreads parts */
 		int yagoSize = yago.size();
 		ExecutorService exec = Executors.newFixedThreadPool(nThreads);
 		int minItemsPerThread = yagoSize / nThreads;
@@ -75,9 +73,9 @@ public class LabelSimilarity {
 	}
 	
 	private void filter(List<Entity> yagoPart) {
-		/**
-		 * Input: Sublist of yago list
-		 * Output: Matches produced by the label similarity filter
+		/*
+		  Input: Sublist of yago list
+		  Output: Matches produced by the label similarity filter
 		 */
 		double similarity; 
 		for(Entity yagoEnt : yagoPart) {

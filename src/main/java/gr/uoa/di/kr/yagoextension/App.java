@@ -35,6 +35,7 @@ public class App {
 	private static String origin;
 	private static int threads = 1;
 	private static String preprocess = null;
+	private static String strSimMethod = "jarowinkler";
 	private static String blacklist = null;
 	private static Reader extendedKG;
 	private static String outputTopology;
@@ -114,22 +115,20 @@ public class App {
 						else
 							usage();
 					}
-					/** output */
 					else if (args[i].contains("--output"))
 						outputMatches = value;
-					/** threads */
 					else if (args[i].contains("--threads"))
 						threads = Integer.parseInt(value);
-					/** preprocess */
 					else if (args[i].contains("--preprocess"))
 						preprocess = value;
 					else if (args[i].contains("--blacklist"))
 						blacklist = value;
+					else if (args[i].contains("--similarity"))
+						strSimMethod = value;
 					else
 						usage();
 				}
 				break;
-			/** generation mode */
 			case "generation":
 				if (args.length < 5)
 					usage();
@@ -149,7 +148,6 @@ public class App {
 						usage();
 				}
 				break;
-			/** topology mode */
 			case "topology":
 				for (int i = 1; i < args.length; i++) {
 					String value = args[i].split("=")[1];
@@ -179,13 +177,13 @@ public class App {
 			Map<String, Entity> yagoEntities = yago.getEntities();
 			Map<String, Entity> dsEntities = datasource.getEntities();
 			logger.info("Finished reading data");
-			/** remove entities that are already matched */
+			/* remove entities that are already matched */
 			if(blacklist != null)
 				Blacklist.removeMatchedEntities(yagoEntities, dsEntities, blacklist);
 			logger.info("Number of Yago Entities: "+yagoEntities.size());
 			logger.info("Number of Datasource Entities: "+dsEntities.size());
 			LabelSimilarity ls = new LabelSimilarity(
-					new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, preprocess, "jarowinkler");
+					new ArrayList<Entity>(yagoEntities.values()), new ArrayList<Entity>(dsEntities.values()), threads, preprocess, strSimMethod);
 			MatchesStructure labelMatches = ls.run();
 			logger.info("Finished Label Similarity Filter");
 			logger.info("Number of Label Similarity Matches: "+labelMatches.size());
@@ -221,7 +219,8 @@ public class App {
 		extendedKG.read();
 		logger.info("Generating Topological Relations");
 		Map<String, Entity> extEntities = extendedKG.getEntities();
-		TopologicalRelationsWriter topoWriter = new TopologicalRelationsWriter(new ArrayList<Entity>(extEntities.values()), outputTopology, threads);
+		TopologicalRelationsWriter topoWriter =
+			new TopologicalRelationsWriter(new ArrayList<Entity>(extEntities.values()), outputTopology, threads);
 		try {
 			topoWriter.write();
 		} catch (IOException | InterruptedException e) {
