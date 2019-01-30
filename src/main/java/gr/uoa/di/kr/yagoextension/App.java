@@ -38,23 +38,28 @@ public class App {
 	private static String blacklist = null;
 	private static Reader extendedKG;
 	private static String outputTopology;
-	final static Logger logger = LogManager.getLogger(App.class);
+	private final static Logger logger = LogManager.getLogger(App.class);
 	
 	public static void main( String[] args ) {
 		
 		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF); // suppress Jena's log4j WARN messages 
 		parseArgs(args);
-		if(mode.equals("matching")) 
-			match();
-		else if(mode.equals("generation"))
-			datasetGeneration();
-		else if(mode.equals("topology"))
-			generateTopologicalRelations();
+		switch (mode) {
+			case "matching":
+				match();
+				break;
+			case "generation":
+				datasetGeneration();
+				break;
+			case "topology":
+				generateTopologicalRelations();
+				break;
+		}
 
 	}
 	
 	private static void usage() {
-		
+
 		System.out.println("---Yago Extension---");
 		System.out.println("-----Arguments------");
 		System.out.println();
@@ -83,84 +88,82 @@ public class App {
 			usage();
 		mode = args[0];
 		/** matching mode */
-		if(mode.equals("matching")) {
-			if (args.length < 4)
-				usage();
-			for(int i = 1; i < args.length; i++) {
-				/** yago */
-				String value = args[i].split("=")[1];
-				if(args[i].contains("--yago")) {
-					if(value.contains(".ttl") || value.contains(".nt") || value.contains(".n3")){
-						yago = new RDFReader(value);
+		switch (mode) {
+			case "matching":
+				if (args.length < 4)
+					usage();
+				for (int i = 1; i < args.length; i++) {
+					/** yago */
+					String value = args[i].split("=")[1];
+					if (args[i].contains("--yago")) {
+						if (value.contains(".ttl") || value.contains(".nt") || value.contains(".n3")) {
+							yago = new RDFReader(value);
+						} else if (value.contains(".tsv")) {
+							yago = new TSVReader(value);
+						} else
+							usage();
 					}
-					else if(value.contains(".tsv")) {
-						yago = new TSVReader(value);
+					/** gadm, osm, etc. */
+					else if (args[i].contains("--datasource")) {
+						if (value.contains(".ttl") || value.contains(".nt") || value.contains(".n3")) {
+							datasource = new RDFReader(value);
+						} else if (value.contains(".tsv")) {
+							datasource = new TSVReader(value);
+						}
+						// TO-DO shapefiles
+						else
+							usage();
 					}
+					/** output */
+					else if (args[i].contains("--output"))
+						outputMatches = value;
+					/** threads */
+					else if (args[i].contains("--threads"))
+						threads = Integer.parseInt(value);
+					/** preprocess */
+					else if (args[i].contains("--preprocess"))
+						preprocess = value;
+					else if (args[i].contains("--blacklist"))
+						blacklist = value;
 					else
 						usage();
 				}
-				/** gadm, osm, etc. */
-				else if(args[i].contains("--datasource")) {
-					if(value.contains(".ttl") || value.contains(".nt") || value.contains(".n3")){
-						datasource = new RDFReader(value);
-					}
-					else if(value.contains(".tsv")) {
-						datasource = new TSVReader(value);
-					}
-					// TO-DO shapefiles
-					else 
+				break;
+			/** generation mode */
+			case "generation":
+				if (args.length < 5)
+					usage();
+				for (int i = 1; i < args.length; i++) {
+					String value = args[i].split("=")[1];
+					if (args[i].contains("--matches"))
+						matchesFile = value;
+					else if (args[i].contains("--matched"))
+						outputMatched = value;
+					else if (args[i].contains("--unmatched"))
+						outputUnmatched = value;
+					else if (args[i].contains("--data"))
+						data = value;
+					else if (args[i].contains("--origin"))
+						origin = value;
+					else
 						usage();
 				}
-				/** output */
-				else if(args[i].contains("--output")) 
-					outputMatches = value;
-				/** threads */
-				else if(args[i].contains("--threads"))
-					threads = Integer.parseInt(value);
-				/** preprocess */
-				else if(args[i].contains("--preprocess"))
-					preprocess = value;
-				else if(args[i].contains("--blacklist"))
-					blacklist = value;
-				else
-					usage();
-			}
-		}
-		/** generation mode */
-		else if(mode.equals("generation")) {
-			if (args.length < 5)
+				break;
+			/** topology mode */
+			case "topology":
+				for (int i = 1; i < args.length; i++) {
+					String value = args[i].split("=")[1];
+					if (args[i].contains("--kg"))
+						extendedKG = new RDFReader(value);
+					else if (args[i].contains("--output"))
+						outputTopology = value;
+					else if (args[i].contains("--threads"))
+						threads = Integer.parseInt(value);
+				}
+				break;
+			default:
 				usage();
-			for(int i = 1; i < args.length; i++) {
-				String value = args[i].split("=")[1];
-				if(args[i].contains("--matches"))
-					matchesFile = value;
-				else if(args[i].contains("--matched"))
-					outputMatched = value;
-				else if(args[i].contains("--unmatched"))
-					outputUnmatched = value;
-				else if(args[i].contains("--data"))
-					data = value;
-				else if(args[i].contains("--origin"))
-					origin = value;
-				else
-					usage();
-			}
-		}
-		/** topology mode */
-		else if(mode.equals("topology")) {
-			for(int i = 1; i < args.length; i++) {
-				String value = args[i].split("=")[1];
-				if(args[i].contains("--kg"))
-					extendedKG = new RDFReader(value);
-				else if(args[i].contains("--output"))
-					outputTopology = value;
-				else if(args[i].contains("--threads"))
-					threads = Integer.parseInt(value);
-			}
-		}
-		else {
-			usage();
-			System.exit(0);
+				System.exit(0);
 		}
 				
 	}
