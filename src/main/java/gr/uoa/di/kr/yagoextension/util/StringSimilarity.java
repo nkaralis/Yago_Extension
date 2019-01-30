@@ -38,11 +38,13 @@ public class StringSimilarity {
 	
 	
 	private static double JaroWinkler(String label1, String label2) {
+		logger.info("Using JaroWinkler Similarity");
 		JaroWinklerDistance jr = new JaroWinklerDistance();
 		return jr.apply(label1, label2);
 	}
 	
 	private static double Levenshtein(String label1, String label2) {
+		logger.info("Using Levenshtein Similarity");
 		LevenshteinDistance lv = new LevenshteinDistance();
 		int dist = lv.apply(label1, label2);
 		/** similarity ratio */
@@ -55,7 +57,7 @@ public class StringSimilarity {
 	 * A String Metric for Ontology Alignment
 	 */
 	private static double SubstringSimilarity(String str1, String str2) {
-		
+		logger.info("Using SubstringSimilarity");
 		/** sim(s1, s1) = comm(s1, s2) - diff(s1, s2) + winkler(s1, s2) */
 		String label1 = str1;
 		String label2 = str2;
