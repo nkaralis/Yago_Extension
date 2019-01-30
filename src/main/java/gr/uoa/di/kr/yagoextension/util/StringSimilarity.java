@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 public class StringSimilarity {
 	
-	final static Logger logger = LogManager.getLogger(StringSimilarity.class);
+	final static Logger logger = LogManager.getRootLogger();
 	/** p factor of substring */
 	private static double p = 0.6;
 	/** P factor of winklerImpr */

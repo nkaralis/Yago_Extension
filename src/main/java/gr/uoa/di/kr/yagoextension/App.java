@@ -39,7 +39,7 @@ public class App {
 	private static String blacklist = null;
 	private static Reader extendedKG;
 	private static String outputTopology;
-	private final static Logger logger = LogManager.getLogger(App.class);
+	private final static Logger logger = LogManager.getRootLogger();
 	
 	public static void main( String[] args ) {
 		
