@@ -8,6 +8,7 @@ package gr.uoa.di.kr.yagoextension;
 
 import java.util.Map;
 
+import gr.uoa.di.kr.yagoextension.util.Evaluation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import gr.uoa.di.kr.yagoextension.filters.GeometryDistance;
@@ -34,6 +35,7 @@ public class App {
 	private static String matchesFile;
 	private static String origin;
 	private static int threads = 1;
+	private static int eval = 0;
 	private static String preprocess = null;
 	private static String strSimMethod = "jarowinkler";
 	private static String blacklist = null;
@@ -125,6 +127,8 @@ public class App {
 						blacklist = value;
 					else if (args[i].contains("--similarity"))
 						strSimMethod = value;
+					else if (args[i].contains("--eval"))
+						eval = Integer.parseInt(value);
 					else
 						usage();
 				}
@@ -203,6 +207,10 @@ public class App {
 			logger.info("Number of Matches: "+geomMatches.size());
 			MatchesWriter matchesWriter = new MatchesWriter(outputMatches, geomMatches);
 			matchesWriter.write();
+			if(eval > 0) {
+				logger.info("Generating a random subset of the matches for evaluation");
+				Evaluation.generate(geomMatches, eval);
+			}
 			
 		} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
