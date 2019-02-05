@@ -209,7 +209,7 @@ public class App {
 			matchesWriter.write();
 			if(eval > 0) {
 				logger.info("Generating a random subset of the matches for evaluation");
-				Evaluation.generate(geomMatches, eval);
+				Evaluation.generate(geomMatches, eval, yagoEntities);
 			}
 			
 		} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {
