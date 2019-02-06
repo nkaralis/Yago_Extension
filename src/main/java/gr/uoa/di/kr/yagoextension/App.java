@@ -208,8 +208,11 @@ public class App {
 			MatchesWriter matchesWriter = new MatchesWriter(outputMatches, geomMatches);
 			matchesWriter.write();
 			if(eval > 0) {
+				String evalOut = outputMatches.replace(".nt", "_eval.txt");
 				logger.info("Generating a random subset of the matches for evaluation");
-				Evaluation.generate(geomMatches, eval, yagoEntities);
+				Evaluation.generate(geomMatches, eval, yagoEntities, dsEntities,
+					evalOut, strSimMethod);
+				logger.info("Evaluation file: "+evalOut);
 			}
 			
 		} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {
