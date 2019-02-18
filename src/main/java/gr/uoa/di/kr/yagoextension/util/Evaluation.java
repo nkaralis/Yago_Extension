@@ -41,8 +41,8 @@ public class Evaluation {
     	      best = sim;
           }
         }
-        out.println(dsBest+"\t"+yagoBest);
       }
+    	out.println(dsBest+"\t"+yagoBest);
     }
     out.close();
   }
