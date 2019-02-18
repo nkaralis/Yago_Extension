@@ -26,7 +26,7 @@ public class Evaluation {
     PrintWriter out = new PrintWriter(file, "UTF-8");
     List<String> keys  = new ArrayList<String>(matches.getKeys());
     Collections.shuffle(keys);
-    List<String> keysEval = keys.subList(0, Integer.max(keys.size(), n));
+    List<String> keysEval = keys.subList(0, Integer.min(keys.size(), n));
     for(String key : keysEval) {
     	String yagoEnt = matches.getValueByKey(key).get(0);
     	double best = 0.0;
