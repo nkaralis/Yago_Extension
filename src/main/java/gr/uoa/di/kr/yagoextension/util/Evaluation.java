@@ -21,7 +21,7 @@ import java.util.Random;
 public class Evaluation {
 
   public static void generate(MatchesStructure matches, int n, Map<String, Entity> yagoEnts, Map<String, Entity> dsEnts,
-                              String file, String method) throws FileNotFoundException, UnsupportedEncodingException {
+                              String file, String method, String preprocess) throws FileNotFoundException, UnsupportedEncodingException {
 
     PrintWriter out = new PrintWriter(file, "UTF-8");
     List<String> keys  = new ArrayList<String>(matches.getKeys());
@@ -32,17 +32,26 @@ public class Evaluation {
     	double best = 0.0;
     	String dsBest = null;
     	String yagoBest = null;
+    	String yagoBestURI = null;
     	for(String dsLabel : dsEnts.get(key).getLabels()) {
     	  for(String yagoLabel : yagoEnts.get(yagoEnt).getLabels()) {
     	    double sim = StringSimilarity.similarity(dsLabel, yagoLabel, method);
+          if(preprocess != null) {
+            String ylProc = LabelProcessing.processYagoLabel(yagoLabel);
+            String dlProc = LabelProcessing.processDataSourceLabel(dsLabel, preprocess);
+            double tempSim = StringSimilarity.similarity(ylProc, dlProc, method);
+            if(tempSim > sim)
+              sim = tempSim;
+          }
     	    if(sim > best) {
     	      dsBest = dsLabel;
     	      yagoBest = yagoLabel;
+    	      yagoBestURI = yagoEnt;
     	      best = sim;
           }
         }
       }
-    	out.println(dsBest+"\t"+yagoBest);
+    	out.println(dsBest+"\t"+yagoBest+"\t"+);
     }
     out.close();
   }
