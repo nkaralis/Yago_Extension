@@ -211,7 +211,7 @@ public class App {
 				String evalOut = outputMatches.replace(".nt", "_eval.txt");
 				logger.info("Generating a random subset of the matches for evaluation");
 				Evaluation.generate(geomMatches, eval, yagoEntities, dsEntities,
-					evalOut, strSimMethod);
+					evalOut, strSimMethod, preprocess);
 				logger.info("Evaluation file: "+evalOut);
 			}
 			
