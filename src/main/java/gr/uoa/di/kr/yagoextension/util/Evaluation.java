@@ -51,7 +51,7 @@ public class Evaluation {
           }
         }
       }
-    	out.println(dsBest+"\t"+yagoBest+"\t"+);
+    	out.println(dsBest+"\t"+yagoBest+"\t"+yagoBestURI);
     }
     out.close();
   }
