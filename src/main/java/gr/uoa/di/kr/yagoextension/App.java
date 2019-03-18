@@ -34,6 +34,7 @@ public class App {
 	private static String outputUnmatched;
 	private static String matchesFile;
 	private static String origin;
+	private static String yagoClass = null;
 	private static int threads = 1;
 	private static int eval = 0;
 	private static String preprocess = null;
@@ -148,6 +149,8 @@ public class App {
 						data = value;
 					else if (args[i].contains("--origin"))
 						origin = value;
+					else if (args[i].contains("--class"))
+						yagoClass = value;
 					else
 						usage();
 				}
@@ -224,7 +227,7 @@ public class App {
 	private static void datasetGeneration() {
 		
 		logger.info("Generating new Knowledge Graphs");
-		DatasetWriter ds = new DatasetWriter(outputMatched, outputUnmatched, matchesFile, data, origin);
+		DatasetWriter ds = new DatasetWriter(outputMatched, outputUnmatched, matchesFile, data, origin, yagoClass);
 		try {
 			ds.write();
 		} catch (IOException e) {
