@@ -2,7 +2,7 @@ package gr.uoa.di.kr.yagoextension.util;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis, Giorgos Mandilaras(GiorgosMandi)
  * kr.di.uoa.gr
  */
 
@@ -12,6 +12,8 @@ public class LabelProcessing {
 		
 		if(source.equals("kallikratis"))
 			return processKallikratisLabel(label);
+		else if (source.equals("kapodistrias"))
+      return processKapodistriasLabel(label);
 		else if(source.equals("os"))
 			return processOSLabel(label);
 		else if(source.equals("osi"))
@@ -28,19 +30,29 @@ public class LabelProcessing {
 			label = label.replace("ΔHMOTIKH ΕNOTHTA ", "");
 		else if(label.contains("ΠΕΡΙΦΕΡΕΙΑ "))
 			label = label.replace("ΠΕΡΙΦΕΡΕΙΑ ", "");
-		else if (label.contains("Δημοτικό διαμέρισμα "))
-        label = label.replace("Δημοτικό διαμέρισμα ", "");
-    else if (label.contains("Κοινοτικό διαμέρισμα "))
-        label = label.replace("Κοινοτικό διαμέρισμα ", "");
-    else if (label.contains("ΚΟΙΝΟΤΗΤΑ "))
-        label = label.replace("ΚΟΙΝΟΤΗΤΑ ", "");
-    else if (label.contains("ΝΟΜΟΣ "))
-          label = label.replace("ΝΟΜΟΣ ", "");
-    else if (label.contains("ΝΟΜΑΡΧΙΑ "))
-        label = label.replace("ΝΟΜΑΡΧΙΑ ", "");
 		
 		return label;
 	}
+
+	private static String processKapodistriasLabel(String label) {
+        label = processYagoLabel(label);
+        if (label.contains("ΔΗΜΟΤΙΚΟ ΔΙΑΜΕΡΙΣΜΑ "))
+            label = label.replace("ΔΗΜΟΤΙΚΟ ΔΙΑΜΕΡΙΣΜΑ ", "");
+        if (label.contains("ΚΟΙΝΟΤΙΚΟ ΔΙΑΜΕΡΙΣΜΑ "))
+            label = label.replace("ΚΟΙΝΟΤΙΚΟ ΔΙΑΜΕΡΙΣΜΑ ", "");
+        if (label.contains("ΚΟΙΝΟΤΗΤΑ "))
+            label = label.replace("ΚΟΙΝΟΤΗΤΑ ", "");
+        if (label.contains("ΔΗΜΟΣ "))
+            label = label.replace("ΔΗΜΟΣ ", "");
+        else if (label.contains("ΝΟΜΟΣ "))
+            label = label.replace("ΝΟΜΟΣ ", "");
+        if (label.contains("ΝΟΜΑΡΧΙΑ "))
+            label = label.replace("ΝΟΜΑΡΧΙΑ ", "");
+        else if (label.contains("ΠΕΡΙΦΕΡΕΙΑ "))
+            label = label.replace("ΠΕΡΙΦΕΡΕΙΑ ", "");
+
+        return label;
+    }
 	
 	public static String processOSLabel(String label) {
 		
