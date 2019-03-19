@@ -115,7 +115,7 @@ public class DatasetWriter {
 					/** check if the predicate is part of the GADM ontology */
 					if(predLN.equals("hasGADM_ID")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = ResourceFactory.createStringLiteral(obj.toString());
+						newObj = ResourceFactory.createStringLiteral(obj.asLiteral().getValue().toString());
 					}
 					else if(predLN.equals("hasGADM_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
@@ -147,7 +147,7 @@ public class DatasetWriter {
 					/** check if the predicate is part of the Kallikratis ontology */
 					if(predLN.equals("hasKallikratis_ID")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = ResourceFactory.createStringLiteral(obj.toString());
+						newObj = ResourceFactory.createStringLiteral(obj.asLiteral().getValue().toString());
 					}
 					else if(predLN.equals("hasKallikratis_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
@@ -212,7 +212,7 @@ public class DatasetWriter {
 					/** check if the predicate is part of the OpenStreetMap (pbf files) ontology */
 					if(predLN.equals("poiRef")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasOSM_ID");
-						newObj = ResourceFactory.createStringLiteral(obj.toString());
+						newObj = ResourceFactory.createStringLiteral(obj.asLiteral().getValue().toString());
 					}
 					else if(predLN.equals("nameValue")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasOSM_Name");
@@ -240,7 +240,7 @@ public class DatasetWriter {
 					/** check if the predicate is part of the Ordnance Survey ontology */
 					if(predLN.equals("hasOS_ID")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = ResourceFactory.createStringLiteral(obj.toString());
+						newObj = ResourceFactory.createStringLiteral(obj.asLiteral().getValue().toString());
 					}
 					else if(predLN.equals("hasOS_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
@@ -268,7 +268,7 @@ public class DatasetWriter {
 					/** check if the predicate is part of the Ordnance Survey Northern Ireland ontology */
 					if(predLN.equals("hasOSNI_ID")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = ResourceFactory.createStringLiteral(obj.toString());
+						newObj = ResourceFactory.createStringLiteral(obj.asLiteral().getValue().toString());
 					}
 					else if(predLN.equals("hasOSNI_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
