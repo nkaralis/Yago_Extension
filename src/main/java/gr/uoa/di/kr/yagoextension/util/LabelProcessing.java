@@ -28,6 +28,16 @@ public class LabelProcessing {
 			label = label.replace("ΔHMOTIKH ΕNOTHTA ", "");
 		else if(label.contains("ΠΕΡΙΦΕΡΕΙΑ "))
 			label = label.replace("ΠΕΡΙΦΕΡΕΙΑ ", "");
+		else if (label.contains("ΔΗΜΟΤΙΚΟ ΔΙΑΜΕΡΙΣΜΑ "))
+        label = label.replace("ΔΗΜΟΤΙΚΟ ΔΙΑΜΕΡΙΣΜΑ ", "");
+    else if (label.contains("ΚΟΙΝΟΤΙΚΟ ΔΙΑΜΕΡΙΣΜΑ "))
+        label = label.replace("ΚΟΙΝΟΤΙΚΟ ΔΙΑΜΕΡΙΣΜΑ ", "");
+    else if (label.contains("ΚΟΙΝΟΤΗΤΑ "))
+        label = label.replace("ΚΟΙΝΟΤΗΤΑ ", "");
+    else if (label.contains("ΝΟΜΟΣ "))
+          label = label.replace("ΝΟΜΟΣ ", "");
+    else if (label.contains("ΝΟΜΑΡΧΙΑ "))
+        label = label.replace("ΝΟΜΑΡΧΙΑ ", "");
 		
 		return label;
 	}
