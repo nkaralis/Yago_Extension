@@ -113,11 +113,14 @@ public class DatasetWriter {
 				/** handle each data source differently */
 				if(source.toLowerCase().equals("gadm")) {
 					/** check if the predicate is part of the GADM ontology */
-					if(predLN.equals("hasGADM_ID") || predLN.equals("hasGADM_Name") || 
-							predLN.equals("hasGADM_NationalLevel") || predLN.equals("hasGADM_UpperLevelUnit")) {
+					if(predLN.equals("hasGADM_ID") || predLN.equals("hasGADM_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = obj;
+						newObj = ResourceFactory.createStringLiteral(obj.toString());
 					}
+//					else if(predLN.equals("hasGADM_NationalLevel") || predLN.equals("hasGADM_UpperLevelUnit")) {
+//            newPred = ResourceFactory.createProperty(extensionONS, predLN);
+//            newObj = obj;
+//          }
 					else if(predLN.equals("type") && predNS.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasGADM_Type");
 						newObj = ResourceFactory.createStringLiteral(obj.asResource().getLocalName());
@@ -138,11 +141,14 @@ public class DatasetWriter {
 				}
 				else if(source.toLowerCase().equals("kallikratis")) {
 					/** check if the predicate is part of the Kallikratis ontology */
-					if(predLN.equals("hasKallikratis_ID") || predLN.equals("hasKallikratis_Name") || 
-							predLN.equals("hasKallikratis_Population")){
+					if(predLN.equals("hasKallikratis_ID") || predLN.equals("hasKallikratis_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = obj;
+						newObj = ResourceFactory.createStringLiteral(obj.toString());
 					}
+//					else if(predLN.equals("hasKallikratis_Population")) {
+//            newPred = ResourceFactory.createProperty(extensionONS, predLN);
+//            newObj = obj;
+//          }
 					else if(predLN.equals("asWKT")) {
 						newPred = hasGeo;
 						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_kallikratis_"+localName);
@@ -161,7 +167,7 @@ public class DatasetWriter {
 					/** check if the predicate is part of the OpenStreetMap (shapefiles) ontology */
 					if(predLN.equals("hasOSM_ID") || predLN.equals("hasOSM_FClass") || predLN.equals("hasOSM_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = obj;
+						newObj = ResourceFactory.createStringLiteral(obj.toString());
 					}
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = hasGeo;
@@ -202,11 +208,11 @@ public class DatasetWriter {
 					}
 					else if(predLN.equals("nameValue")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasOSM_Name");
-						newObj = obj;
+						newObj = ResourceFactory.createStringLiteral(obj.toString());
 					}
 					else if(predLN.equals("category")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasOSM_FClass");
-						newObj = ResourceFactory.createPlainLiteral(tgCategories.get(obj.asResource().getLocalName()));
+						newObj = ResourceFactory.createStringLiteral(tgCategories.get(obj.asResource().getLocalName()));
 
 					}
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
@@ -224,11 +230,14 @@ public class DatasetWriter {
 				
 				else if(source.toLowerCase().equals("os")) {
 					/** check if the predicate is part of the Ordnance Survey ontology */
-					if(predLN.equals("hasOS_AreaCode") || predLN.equals("hasOS_Description") || 
-							predLN.equals("hasOS_ID") || predLN.equals("hasOS_Name") ) {
+					if(predLN.equals("hasOS_ID") || predLN.equals("hasOS_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = obj;
+						newObj = ResourceFactory.createStringLiteral(obj.toString());
 					}
+					else if(predLN.equals("hasOS_Description")) {
+            newPred = ResourceFactory.createProperty(extensionONS, "hasGADM_Type");
+            newObj = ResourceFactory.createStringLiteral(obj.toString());
+          }
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = hasGeo;
 						/** keep the id for the geometry */
@@ -245,11 +254,14 @@ public class DatasetWriter {
 				
 				else if(source.toLowerCase().equals("osni")) {
 					/** check if the predicate is part of the Ordnance Survey Northern Ireland ontology */
-					if(predLN.equals("hasOSNI_Area") || predLN.equals("hasOSNI_AreaSqKM") || 
-							predLN.equals("hasOSNI_ID") || predLN.equals("hasOSNI_Name") || predLN.equals("hasOSNI_Perimeter") ) {
+					if(predLN.equals("hasOSNI_ID") || predLN.equals("hasOSNI_Name")) {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
-						newObj = obj;						
+						newObj = ResourceFactory.createStringLiteral(obj.toString());
 					}
+//					else if(predLN.equals("hasOSNI_Area") || predLN.equals("hasOSNI_AreaSqKM") || predLN.equals("hasOSNI_Perimeter")) {
+//            newPred = ResourceFactory.createProperty(extensionONS, predLN);
+//            newObj = obj;
+//          }
 					else if(predLN.equals("hasOSNI_Class")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasOSNI_Type");
 						newObj = ResourceFactory.createStringLiteral(obj.asLiteral().getString());
@@ -283,7 +295,7 @@ public class DatasetWriter {
 					}
 					else if(predLN.equals("label") && predNS.equals("http://www.w3.org/2000/01/rdf-schema#")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasOSI_Name");
-						newObj = obj;
+						newObj = ResourceFactory.createStringLiteral(obj.toString());
 					}
 					else if(predLN.equals("hasGeometry") && predNS.equals("http://www.opengis.net/ont/geosparql#") && 
 							modelData.listObjectsOfProperty(obj.asResource(), asWKT).hasNext()) {
@@ -308,7 +320,7 @@ public class DatasetWriter {
 							newPred.asNode(), newObj.asNode()));
 
 			}
-			/** if the class of yago is provided, then make an unmatched entity instance of the class */
+			/** if the class of yago is provided, then make an unmatched entity instance of the provided class */
 			if(yagoEnt == null && yagoClass != null)
 				triplesUnmatched.add(new Triple(ResourceFactory.createResource(extensionRNS+source+"entity_"+localName).asNode(),
 					type.asNode(), ResourceFactory.createResource(yagoNS+yagoClass).asNode()));
