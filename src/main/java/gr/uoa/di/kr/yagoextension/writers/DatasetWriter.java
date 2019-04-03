@@ -109,7 +109,6 @@ public class DatasetWriter {
 				RDFNode obj = s.getObject();
 				Property newPred = null;
 				RDFNode newObj = null;
-				
 				/** handle each data source differently */
 				if(source.toLowerCase().equals("gadm")) {
 					/** check if the predicate is part of the GADM ontology */
@@ -193,22 +192,22 @@ public class DatasetWriter {
 				else if(source.toLowerCase().equals("osmpbf")) {
 					/** TripleGeo categories map */
 					HashMap<String, String> tgCategories = new HashMap<String, String>();
-					tgCategories.put("33cad1f4-426e-3b58-9e98-32d44f40bd16", "bay");
-					tgCategories.put("62b95212-b08c-37c3-abeb-67c1082ff98c", "beach");
-					tgCategories.put("905fb6d4-965b-32e6-8cec-7ddfc04f6181", "canal");
-					tgCategories.put("51cb0b75-829a-3c75-919b-970067ef1f51", "city");
-					tgCategories.put("5b261732-d5a3-3978-9222-9f80e4c1a98b", "island");
-					tgCategories.put("18fc7ecd-f71a-3ab5-9461-21e194b4663f", "forest");
-					tgCategories.put("5a1fbf10-7ac0-3b82-94bb-0d4b9a78947c", "lagoon");
-					tgCategories.put("2d99610e-1206-33a3-a283-eb3fc521d923", "lake");
-					tgCategories.put("b083bcc2-1c65-3b11-a924-5e1cc4257c6b", "locality");
-					tgCategories.put("75c70f0a-579f-3a34-b2ca-15bba83bcb9a", "nature_reserve");
-					tgCategories.put("9a0eaccb-d16b-3a08-bd90-865fa202444e", "oxbow");
-					tgCategories.put("d07f8667-aee9-3576-809a-bf803b432b60", "park");
-					tgCategories.put("f8b7902b-7339-3f65-97df-324b5c185b2b", "stream");
-					tgCategories.put("759eca10-f3bb-3c2f-b30f-08efc6864559", "town");
-					tgCategories.put("45be85d6-d2bf-30e2-b366-a0b6414c0f9f", "reservoir");
-					tgCategories.put("314ce8c5-f5e8-3380-997c-c22098f7a7cb", "village");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/33cad1f4-426e-3b58-9e98-32d44f40bd16", "bay");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/62b95212-b08c-37c3-abeb-67c1082ff98c", "beach");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/905fb6d4-965b-32e6-8cec-7ddfc04f6181", "canal");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/51cb0b75-829a-3c75-919b-970067ef1f51", "city");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/5b261732-d5a3-3978-9222-9f80e4c1a98b", "island");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/18fc7ecd-f71a-3ab5-9461-21e194b4663f", "forest");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/5a1fbf10-7ac0-3b82-94bb-0d4b9a78947c", "lagoon");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/2d99610e-1206-33a3-a283-eb3fc521d923", "lake");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/b083bcc2-1c65-3b11-a924-5e1cc4257c6b", "locality");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/75c70f0a-579f-3a34-b2ca-15bba83bcb9a", "nature_reserve");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/9a0eaccb-d16b-3a08-bd90-865fa202444e", "oxbow");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/44593b36-95b4-3233-84c9-e63e1094e394", "park");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/f8b7902b-7339-3f65-97df-324b5c185b2b", "stream");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/759eca10-f3bb-3c2f-b30f-08efc6864559", "town");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/45be85d6-d2bf-30e2-b366-a0b6414c0f9f", "reservoir");
+					tgCategories.put("http://kr.di.uoa.gr/ontology/314ce8c5-f5e8-3380-997c-c22098f7a7cb", "village");
 					/** check if the predicate is part of the OpenStreetMap (pbf files) ontology */
 					if(predLN.equals("poiRef")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasOSM_ID");
@@ -219,8 +218,8 @@ public class DatasetWriter {
 						newObj = obj;
 					}
 					else if(predLN.equals("category")) {
-						newPred = ResourceFactory.createProperty(extensionONS, "hasOSM_FClass");
-						newObj = ResourceFactory.createStringLiteral(tgCategories.get(obj.asResource().getLocalName()));
+						newPred = ResourceFactory.createProperty(extensionONS, "hasOSM_Type");
+						newObj = ResourceFactory.createStringLiteral(tgCategories.get(obj.toString()));
 
 					}
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
