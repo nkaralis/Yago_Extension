@@ -256,13 +256,13 @@ public class DatasetWriter {
 						newObj = obj;
 					}
 					else if(predLN.equals("hasOS_Description")) {
-            newPred = ResourceFactory.createProperty(extensionONS, "hasGADM_Type");
-            newObj = obj;
+            newPred = type;
+            newObj = ResourceFactory.createResource(extensionONS+"OS_"+obj.toString());
           }
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = hasGeo;
 						/** keep the id for the geometry */
-						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_os_"+localName.split("_")[localName.split("_").length-1]);
+						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_OS_"+localName.split("_")[localName.split("_").length-1]);
 						newObj = geom;
 						if(yagoEnt != null)
 							triplesMatched.add(new Triple(geom.asNode(), asWKT.asNode(), obj.asNode()));
@@ -288,8 +288,8 @@ public class DatasetWriter {
 //            newObj = obj;
 //          }
 					else if(predLN.equals("hasOSNI_Class")) {
-						newPred = ResourceFactory.createProperty(extensionONS, "hasOSNI_Type");
-						newObj = ResourceFactory.createStringLiteral(obj.asLiteral().getString());
+						newPred = type;
+						newObj = ResourceFactory.createStringLiteral(extensionONS+"OSNI_"+obj.asLiteral().getString());
 					}
 					else if(predLN.equals("hasGeometry") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = pred;
