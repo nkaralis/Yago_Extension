@@ -104,11 +104,6 @@ public class DatasetWriter {
 				yagoEnt = modelMatches.listObjectsOfProperty(dataEnt, null).next();
 			dataIter = modelData.listStatements(dataEnt, null, (RDFNode)null);
 			/** rdf:type feature. every entity is an instance of geo:Feature */
-			if(yagoEnt != null)
-				triplesMatched.add(new Triple(yagoEnt.asNode(), type.asNode(), feature.asNode()));
-			else
-				triplesUnmatched.add(new Triple(ResourceFactory.createResource(
-					extensionRNS+source+"entity_"+localName).asNode(), type.asNode(), feature.asNode()));
 			while(dataIter.hasNext()) {
 				Statement s = dataIter.next();
 				Property pred = s.getPredicate();
@@ -131,10 +126,17 @@ public class DatasetWriter {
 					else if(predLN.equals("hasGADM_NationalLevel") || predLN.equals("hasGADM_UpperLevelUnit")) {
             newPred = ResourceFactory.createProperty(extensionONS, predLN);
             newObj = obj;
+            if(yagoEnt != null)
+							triplesMatched.add(new Triple(yagoEnt.asNode(), type.asNode(), 
+									ResourceFactory.createResource(extensionONS+"GADM_"+obj.toString()+"_AdministrativeUnit").asNode()));
+						else
+							triplesUnmatched.add(new Triple(ResourceFactory.createResource(extensionRNS+source+"entity_"+localName).asNode(), 
+									type.asNode(), ResourceFactory.createResource(extensionONS+"GADM_"+obj.toString()+"_AdministrativeUnit").asNode()));
+            
           }
 					else if(predLN.equals("type") && predNS.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
-						newPred = type;
-						newObj = ResourceFactory.createResource(extensionONS+"GADM_"+obj.asResource().getLocalName());
+						newPred = ResourceFactory.createProperty(extensionONS, "hasGADM_Description");
+						newObj = ResourceFactory.createStringLiteral(obj.asResource().getLocalName());
 					}
 					else if(predLN.equals("hasGeometry") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = pred;
@@ -144,7 +146,7 @@ public class DatasetWriter {
 							triplesMatched.add(new Triple(ResourceFactory.createResource(extensionRNS+newObj.asResource().getLocalName()).asNode(), 
 									asWKT.asNode(), wkt.asNode()));
 						else
-							triplesMatched.add(new Triple(ResourceFactory.createResource(extensionRNS+newObj.asResource().getLocalName()).asNode(), 
+							triplesUnmatched.add(new Triple(ResourceFactory.createResource(extensionRNS+newObj.asResource().getLocalName()).asNode(), 
 									asWKT.asNode(), wkt.asNode()));
 					}
 					else
