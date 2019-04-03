@@ -289,7 +289,7 @@ public class DatasetWriter {
 //          }
 					else if(predLN.equals("hasOSNI_Class")) {
 						newPred = type;
-						newObj = ResourceFactory.createStringLiteral(extensionONS+"OSNI_"+obj.asLiteral().getString());
+						newObj = ResourceFactory.createResource(extensionONS+"OSNI_"+obj.asLiteral().getString());
 					}
 					else if(predLN.equals("hasGeometry") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = pred;
