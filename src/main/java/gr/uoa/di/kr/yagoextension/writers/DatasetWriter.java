@@ -257,7 +257,7 @@ public class DatasetWriter {
 					}
 					else if(predLN.equals("hasOS_Description")) {
             newPred = type;
-            newObj = ResourceFactory.createResource(extensionONS+"OS_"+obj.toString());
+            newObj = ResourceFactory.createResource(extensionONS+"OS_"+obj.toString().replace(" ", ""));
           }
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = hasGeo;
@@ -289,7 +289,7 @@ public class DatasetWriter {
 //          }
 					else if(predLN.equals("hasOSNI_Class")) {
 						newPred = type;
-						newObj = ResourceFactory.createResource(extensionONS+"OSNI_"+obj.asLiteral().getString());
+						newObj = ResourceFactory.createResource(extensionONS+"OSNI_"+obj.asLiteral().getString().replace(" ", ""));
 					}
 					else if(predLN.equals("hasGeometry") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
 						newPred = pred;
