@@ -123,7 +123,7 @@ public class DatasetWriter {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
 						newObj = obj;
 					}
-					else if(predLN.equals("hasGADM_NationalLevel") || predLN.equals("hasGADM_UpperLevelUnit")) {
+					else if(predLN.equals("hasGADM_NationalLevel")) {
             newPred = ResourceFactory.createProperty(extensionONS, predLN);
             newObj = obj;
             if(yagoEnt != null)
@@ -134,6 +134,10 @@ public class DatasetWriter {
 									type.asNode(), ResourceFactory.createResource(extensionONS+"GADM_"+obj.toString()+"_AdministrativeUnit").asNode()));
             
           }
+					else if(predLN.equals("hasGADM_UpperLevelUnit")) {
+						newPred = ResourceFactory.createProperty(extensionONS, predLN);
+						newObj = obj;
+					}
 					else if(predLN.equals("type") && predNS.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
 						newPred = ResourceFactory.createProperty(extensionONS, "hasGADM_Description");
 						newObj = ResourceFactory.createStringLiteral(obj.asResource().getLocalName());
