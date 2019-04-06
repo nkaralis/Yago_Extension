@@ -203,7 +203,7 @@ public class DatasetWriter {
 						continue;
 				}
 
-				else if(source.toLowerCase().equals("osmpbf")) {
+				else if(source.toLowerCase().equals("osm")) {
 					/** TripleGeo categories map */
 					HashMap<String, String> tgCategories = new HashMap<String, String>();
 					tgCategories.put("http://kr.di.uoa.gr/ontology/33cad1f4-426e-3b58-9e98-32d44f40bd16", "bay");
@@ -232,8 +232,8 @@ public class DatasetWriter {
 						newObj = obj;
 					}
 					else if(predLN.equals("category")) {
-						newPred = ResourceFactory.createProperty(extensionONS, "hasOSM_Type");
-						newObj = ResourceFactory.createStringLiteral(tgCategories.get(obj.toString()));
+						newPred = type;
+						newObj = ResourceFactory.createResource(extensionONS+"OSM_"+tgCategories.get(obj.toString()));
 
 					}
 					else if(predLN.equals("asWKT") && predNS.equals("http://www.opengis.net/ont/geosparql#")) {
