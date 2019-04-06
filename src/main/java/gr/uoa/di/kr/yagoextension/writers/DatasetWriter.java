@@ -291,10 +291,10 @@ public class DatasetWriter {
 						newPred = ResourceFactory.createProperty(extensionONS, predLN);
 						newObj = obj;
 					}
-//					else if(predLN.equals("hasOSNI_Area") || predLN.equals("hasOSNI_AreaSqKM") || predLN.equals("hasOSNI_Perimeter")) {
-//            newPred = ResourceFactory.createProperty(extensionONS, predLN);
-//            newObj = obj;
-//          }
+					else if(predLN.equals("hasOSNI_Area") || predLN.equals("hasOSNI_AreaSqKM") || predLN.equals("hasOSNI_Perimeter")) {
+            newPred = ResourceFactory.createProperty(extensionONS, predLN);
+            newObj = obj;
+          }
 					else if(predLN.equals("hasOSNI_Class")) {
 						newPred = type;
 						newObj = ResourceFactory.createResource(extensionONS+"OSNI_"+obj.asLiteral().getString().replace(" ", ""));
@@ -316,8 +316,8 @@ public class DatasetWriter {
 					/** check if the predicate is part of the Ordnance Survey Ireland ontology */
 					if(predLN.equals("type") && predNS.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#") && 
 							!obj.asResource().getLocalName().equals("Feature") && !obj.asResource().getLocalName().equals("Geometry")) {
-						newPred = ResourceFactory.createProperty(extensionONS, "hasOSI_Type");
-						newObj = ResourceFactory.createStringLiteral(obj.asResource().getLocalName());
+						newPred = type;
+						newObj = ResourceFactory.createResource(extensionONS+"OSI_"+obj.asResource().getLocalName().replace(" ", ""));
 						Property hasID = ResourceFactory.createProperty(extensionONS, "hasOSI_ID");
 						RDFNode osiID = ResourceFactory.createStringLiteral(dataEnt.getLocalName());
 						if(yagoEnt != null)
