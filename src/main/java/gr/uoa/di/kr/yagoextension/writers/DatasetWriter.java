@@ -156,23 +156,27 @@ public class DatasetWriter {
 					else
 						continue;
 				}
-				else if(source.toLowerCase().equals("kallikratis")) {
+				else if(source.toLowerCase().equals("gag")) {
 					/** check if the predicate is part of the Kallikratis ontology */
 					if(predLN.equals("hasKallikratis_ID")) {
-						newPred = ResourceFactory.createProperty(extensionONS, predLN);
+						newPred = ResourceFactory.createProperty(extensionONS, predLN.replace("hasKallikratis", "hasGAG"));
 						newObj = ResourceFactory.createStringLiteral(obj.asLiteral().getValue().toString());
 					}
 					else if(predLN.equals("hasKallikratis_Name")) {
-						newPred = ResourceFactory.createProperty(extensionONS, predLN);
+						newPred = ResourceFactory.createProperty(extensionONS, predLN.replace("hasKallikratis", "hasGAG"));
 						newObj = obj;
 					}
-//					else if(predLN.equals("hasKallikratis_Population")) {
-//            newPred = ResourceFactory.createProperty(extensionONS, predLN);
-//            newObj = obj;
-//          }
+					else if(predLN.equals("hasKallikratis_Population")) {
+            newPred = ResourceFactory.createProperty(extensionONS, predLN.replace("hasKallikratis", "hasGAG"));
+            newObj = obj;
+          }
+					else if(predLN.equals("type") && predNS.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
+						newPred = type;
+						newObj = ResourceFactory.createResource(extensionONS+"GAG_"+obj.asResource().getLocalName());
+					}
 					else if(predLN.equals("asWKT")) {
 						newPred = hasGeo;
-						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_kallikratis_"+localName);
+						RDFNode geom = ResourceFactory.createResource(extensionRNS+"Geometry_gag_"+localName);
 						newObj = geom;
 						if(yagoEnt != null)
 							triplesMatched.add(new Triple(geom.asNode(), asWKT.asNode(), obj.asNode()));
