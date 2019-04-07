@@ -25,7 +25,7 @@ import me.tongfei.progressbar.ProgressBar;
 
 public class LabelSimilarity {
 	
-	private double threshold = 0.8;
+	private double threshold = 0.82;
 	private int nThreads;
 	private MatchesStructure matches;
 	private List<Entity> yago;
