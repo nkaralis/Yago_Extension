@@ -34,8 +34,8 @@ public class TopologicalRelationsWriter {
 		this.kgsize = ents.size();
 		this.outputFile = path;
 		this.nThreads = threads;
-		touches = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "sf-touches");
-		within = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "sf-within");
+		touches = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "sfTouches");
+		within = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "sfWithin");
 		position = 0;
 	}
 	
