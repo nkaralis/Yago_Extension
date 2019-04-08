@@ -67,8 +67,8 @@ public class DatasetWriter {
 
 	private void writeFromFile() throws IOException {
 		
-		String extensionRNS = "http://kr.di.uoa.gr/yago4/resource/";
-		String extensionONS = "http://kr.di.uoa.gr/yago4/ontology/";
+		String extensionRNS = "http://kr.di.uoa.gr/yago2geo/resource/";
+		String extensionONS = "http://kr.di.uoa.gr/yago2geo/ontology/";
 		String yagoNS = "http://yago-knowledge.org/resource/";
 		
 		logger.info("Started reading matches and data");
