@@ -2,7 +2,7 @@ package gr.uoa.di.kr.yagoextension;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis
  * kr.di.uoa.gr
  */
 
@@ -11,11 +11,11 @@ import java.util.Map;
 import gr.uoa.di.kr.yagoextension.util.Evaluation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import gr.uoa.di.kr.yagoextension.filters.GeometryDistance;
-import gr.uoa.di.kr.yagoextension.filters.LabelSimilarity;
-import gr.uoa.di.kr.yagoextension.readers.*;
-import gr.uoa.di.kr.yagoextension.structures.Entity;
-import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
+import gr.uoa.di.kr.yagoextension.filter.GeometryDistance;
+import gr.uoa.di.kr.yagoextension.filter.LabelSimilarity;
+import gr.uoa.di.kr.yagoextension.reader.*;
+import gr.uoa.di.kr.yagoextension.domain.Entity;
+import gr.uoa.di.kr.yagoextension.domain.MatchesStructure;
 import gr.uoa.di.kr.yagoextension.util.Blacklist;
 import gr.uoa.di.kr.yagoextension.writers.*;
 import java.io.FileNotFoundException;
@@ -24,7 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 public class App {
-	
+
 	private static String mode;
 	private static Reader yago;
 	private static Reader datasource;
@@ -43,9 +43,9 @@ public class App {
 	private static Reader extendedKG;
 	private static String outputTopology;
 	private final static Logger logger = LogManager.getRootLogger();
-	
+
 	public static void main( String[] args ) {
-		
+
 		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF); // suppress Jena's log4j WARN messages
 		parseArgs(args);
 		switch (mode) {
@@ -61,7 +61,7 @@ public class App {
 		}
 
 	}
-	
+
 	private static void usage() {
 
 		System.out.println("---Yago Extension---");
@@ -85,9 +85,9 @@ public class App {
 				+ "--datasource=gadm_admLevel1.nt --output=1level_matches.ttl --threads=4");
 		System.exit(0);
 	}
-	
+
 	private static void parseArgs(String args[]) {
-		
+
 		if(args.length < 1)
 			usage();
 		mode = args[0];
@@ -170,13 +170,13 @@ public class App {
 				usage();
 				System.exit(0);
 		}
-				
+
 	}
 
 	private static void match() {
-		
+
 		try {
-			System.setProperty("org.geotools.referencing.forceXY", "true"); // force (long lat) in geotools 
+			System.setProperty("org.geotools.referencing.forceXY", "true"); // force (long lat) in geotools
 			logger.info("Matching phase");
 			logger.info("Started reading data");
 			yago.read();
@@ -217,15 +217,15 @@ public class App {
 					evalOut, strSimMethod, preprocess);
 				logger.info("Evaluation file: "+evalOut);
 			}
-			
+
 		} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 			System.exit(2);
-		}		
+		}
 	}
-	
+
 	private static void datasetGeneration() {
-		
+
 		logger.info("Generating new Knowledge Graphs");
 		DatasetWriter ds = new DatasetWriter(outputMatched, outputUnmatched, matchesFile, data, origin, yagoClass);
 		try {
@@ -236,9 +236,9 @@ public class App {
 		}
 		logger.info("Generated new Knowledge Graphs");
 	}
-	
+
 	private static void generateTopologicalRelations() {
-		
+
 		logger.info("Generation of Topological Relations");
 		logger.info("Started reading data");
 		extendedKG.read();
@@ -254,5 +254,5 @@ public class App {
 		}
 		logger.info("Generated Topological Relations");
 	}
-	
+
 }

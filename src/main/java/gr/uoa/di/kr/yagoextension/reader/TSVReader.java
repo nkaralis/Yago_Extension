@@ -1,8 +1,8 @@
-package gr.uoa.di.kr.yagoextension.readers;
+package gr.uoa.di.kr.yagoextension.reader;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis
  * kr.di.uoa.gr
  */
 
@@ -13,7 +13,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import com.vividsolutions.jts.io.ParseException;
-import gr.uoa.di.kr.yagoextension.structures.Entity;
+import gr.uoa.di.kr.yagoextension.domain.Entity;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,19 +22,19 @@ import java.util.List;
 
 
 public class TSVReader extends Reader {
-	
+
 	public TSVReader(String path) {
 		super(path);
 	}
 
 	public void read() {
-		
+
 		/** prepare data */
 		File tsvFile = new File(inputFile);
 		Map<String, List<String>> labelsMap = new HashMap<String, List<String>>();
 		Map<String, String> latiMap = new HashMap<String, String>();
 		Map<String, String> longiMap = new HashMap<String, String>();
-		
+
 		try {
 			CSVFormat csvFileFormat = CSVFormat.TDF.withQuote(null);
 			CSVParser parser = CSVParser.parse(tsvFile, StandardCharsets.UTF_8, csvFileFormat);
@@ -52,11 +52,11 @@ public class TSVReader extends Reader {
 				else if(x.get(1).contains("Longitude"))
 					longiMap.put(x.get(0), x.get(3));
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		/** create new entities */
 		for(String key : latiMap.keySet()) {
 			if(labelsMap.get(key) == null) continue;

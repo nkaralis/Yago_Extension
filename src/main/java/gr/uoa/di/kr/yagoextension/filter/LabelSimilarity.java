@@ -1,4 +1,4 @@
-package gr.uoa.di.kr.yagoextension.filters;
+package gr.uoa.di.kr.yagoextension.filter;
 
 /**
  * This class is part of the YAGO Extension Project
@@ -6,9 +6,9 @@ package gr.uoa.di.kr.yagoextension.filters;
  * kr.di.uoa.gr
  */
 
-import gr.uoa.di.kr.yagoextension.structures.Entity;
-import gr.uoa.di.kr.yagoextension.structures.LabelMatchesStructure;
-import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
+import gr.uoa.di.kr.yagoextension.domain.Entity;
+import gr.uoa.di.kr.yagoextension.domain.LabelMatchesStructure;
+import gr.uoa.di.kr.yagoextension.domain.MatchesStructure;
 import gr.uoa.di.kr.yagoextension.util.LabelProcessing;
 import gr.uoa.di.kr.yagoextension.util.StringSimilarity;
 import java.util.List;
@@ -17,14 +17,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import me.tongfei.progressbar.ProgressBar;
 
-/** 
+/**
  *  Finds similar labels between Yago entities and the entities of the second data source.
  *  An entity of Yago can be matched with multiple entities for the second data source in this filter.
- *  Levenshtein distance is used in order to find similarity between labels. 
+ *  Levenshtein distance is used in order to find similarity between labels.
  */
 
 public class LabelSimilarity {
-	
+
 	private double threshold = 0.82;
 	private int nThreads;
 	private MatchesStructure matches;
@@ -34,7 +34,7 @@ public class LabelSimilarity {
 	private String preprocess;
 	private String strSimilarity;
 
-	
+
 	public LabelSimilarity(List<Entity> yago, List<Entity> ds, int threads, String origin, String method) {
 		this.yago = yago;
 		this.ds = ds;
@@ -45,7 +45,7 @@ public class LabelSimilarity {
 		/* pre-processing of labels for the official datasets */
 		preprocess = origin;
 	}
-	
+
 	public MatchesStructure run() throws InterruptedException {
 		/* Initialize threads and split the list of yago entities in nThreads parts */
 		int yagoSize = yago.size();
@@ -71,13 +71,13 @@ public class LabelSimilarity {
 		pb.close(); // terminate progress bar
 		return matches;
 	}
-	
+
 	private void filter(List<Entity> yagoPart) {
 		/*
 		  Input: Sublist of yago list
 		  Output: Matches produced by the label similarity filter
 		 */
-		double similarity; 
+		double similarity;
 		for(Entity yagoEnt : yagoPart) {
 			String yagoKey = yagoEnt.getID();
 			for(Entity dsEnt : ds) {

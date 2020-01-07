@@ -1,8 +1,8 @@
-package gr.uoa.di.kr.yagoextension.readers;
+package gr.uoa.di.kr.yagoextension.reader;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis
  * kr.di.uoa.gr
  */
 
@@ -15,7 +15,7 @@ public class SHPReader extends Reader {
 	@Override
 	public void read() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

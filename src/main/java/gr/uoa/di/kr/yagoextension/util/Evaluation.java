@@ -1,7 +1,7 @@
 package gr.uoa.di.kr.yagoextension.util;
 
-import gr.uoa.di.kr.yagoextension.structures.Entity;
-import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
+import gr.uoa.di.kr.yagoextension.domain.Entity;
+import gr.uoa.di.kr.yagoextension.domain.MatchesStructure;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * This class is part of the YAGO Extension Project

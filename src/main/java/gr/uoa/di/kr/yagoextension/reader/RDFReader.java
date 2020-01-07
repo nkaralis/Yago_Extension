@@ -1,8 +1,8 @@
-package gr.uoa.di.kr.yagoextension.readers;
+package gr.uoa.di.kr.yagoextension.reader;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis
  * kr.di.uoa.gr
  */
 
@@ -15,18 +15,18 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
 import java.util.ArrayList;
 import com.vividsolutions.jts.io.ParseException;
-import gr.uoa.di.kr.yagoextension.structures.Entity;
+import gr.uoa.di.kr.yagoextension.domain.Entity;
 
 public class RDFReader extends Reader {
 
 	public RDFReader(String path) {
 		super(path);
 	}
-		
+
 	public void read() {
-				
-		/** create the Model and read the data */	
-	  Model model = RDFDataMgr.loadModel(inputFile); 
+
+		/** create the Model and read the data */
+	  Model model = RDFDataMgr.loadModel(inputFile);
 	  /** iterate over all subjects */
 	  ResIterator subjIter = model.listSubjects();
 	  while(subjIter.hasNext()) {
@@ -47,7 +47,7 @@ public class RDFReader extends Reader {
 	    		subjLabels.add(triple.getObject().asLiteral().getString());
 	    		flagL = true; // create entity if it has a label and a geometry
 	    	}
-	    	else if(pred.contains("hasGeometry") && model.listStatements(triple.getObject().asResource(), null, null, null).hasNext()) { 
+	    	else if(pred.contains("hasGeometry") && model.listStatements(triple.getObject().asResource(), null, null, null).hasNext()) {
 	    		subjWKT = model.listStatements(triple.getObject().asResource(), null, null, null).next().getObject().asLiteral().getString();
 	    		flagG = true; // create entity if it has a label and a geometry
 	    	}
@@ -62,7 +62,7 @@ public class RDFReader extends Reader {
 	    	else if(pred.contains("hasLongitude"))
 	    		longi = triple.getObject().asLiteral().getLexicalForm();
 	    }
-	    
+
 	    /** create a new entity */
 	    if(flagG && flagL) {
 	    	try {

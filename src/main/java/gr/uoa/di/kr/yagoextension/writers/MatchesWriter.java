@@ -2,7 +2,7 @@ package gr.uoa.di.kr.yagoextension.writers;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis
  * kr.di.uoa.gr
  */
 
@@ -16,20 +16,20 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 
-import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
+import gr.uoa.di.kr.yagoextension.domain.MatchesStructure;
 
 public class MatchesWriter {
-	
+
 	private String outputFile;
 	private MatchesStructure matches;
-	
+
 	public MatchesWriter(String path, MatchesStructure m) {
 		this.outputFile = path;
 		this.matches = m;
 	}
 
 	public void write() throws FileNotFoundException, UnsupportedEncodingException {
-		
+
 		String prefix = "http://yago-knowledge.org/resource/";
 		PrintWriter out = new PrintWriter(outputFile, "UTF-8");
 		Model matchesModel = ModelFactory.createDefaultModel();

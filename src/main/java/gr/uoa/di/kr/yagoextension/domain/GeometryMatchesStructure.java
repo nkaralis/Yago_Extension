@@ -1,8 +1,8 @@
-package gr.uoa.di.kr.yagoextension.structures;
+package gr.uoa.di.kr.yagoextension.domain;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis
  * kr.di.uoa.gr
  */
 
@@ -12,14 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GeometryMatchesStructure extends MatchesStructure {
-	
+
 	private Map<String, Double> distances;
-	
+
 	public GeometryMatchesStructure() {
 		super();
 		distances = new HashMap<String, Double>();
 	}
-	
+
 	public void addMatch(String key, String value, double dist) {
 		/** if the key is already in use, update the list if the ratio is same or better */
 		if(distances.containsKey(key)) {

@@ -2,7 +2,7 @@ package gr.uoa.di.kr.yagoextension.util;
 
 /**
  * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
+ * Author: Nikos Karalis
  * kr.di.uoa.gr
  */
 
@@ -23,24 +23,24 @@ public class StringSimilarity {
 	private static double p = 0.6;
 	/** P factor of winklerImpr */
 	private static double P = 0.1;
-	
+
 	public static double similarity(String label1, String label2, String method) {
-		
+
 		if(method.toLowerCase().equals("jarowinkler"))
 			return JaroWinkler(label1, label2);
 		else if(method.toLowerCase().equals("substring"))
 			return SubstringSimilarity(label1, label2);
 		else
 			return Levenshtein(label1, label2);
-		
+
 	}
-	
-	
+
+
 	private static double JaroWinkler(String label1, String label2) {
 		JaroWinklerDistance jr = new JaroWinklerDistance();
 		return jr.apply(label1, label2);
 	}
-	
+
 	private static double Levenshtein(String label1, String label2) {
 		LevenshteinDistance lv = new LevenshteinDistance();
 		int dist = lv.apply(label1, label2);
@@ -48,7 +48,7 @@ public class StringSimilarity {
 		int maxLen = Math.max(label1.length(), label2.length());
 		return 1-((double)dist/maxLen);
 	}
-	
+
 	/*
 	 * Proposed by Giorgos Stoilos, Giorgos Stamou, and Stefanos Kollias
 	 * A String Metric for Ontology Alignment

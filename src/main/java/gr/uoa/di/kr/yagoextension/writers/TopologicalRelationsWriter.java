@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.TopologyException;
-import gr.uoa.di.kr.yagoextension.structures.Entity;
+import gr.uoa.di.kr.yagoextension.domain.Entity;
 
 public class TopologicalRelationsWriter {
 
@@ -28,7 +28,7 @@ public class TopologicalRelationsWriter {
 	private Integer position;
 	private FileOutputStream out;
 	final static Logger rootLogger = LogManager.getRootLogger();
-	
+
 	public TopologicalRelationsWriter(List<Entity> ents, String path, int threads) {
 		this.entities = ents;
 		this.kgsize = ents.size();
@@ -38,7 +38,7 @@ public class TopologicalRelationsWriter {
 		within = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#", "sfWithin");
 		position = 0;
 	}
-	
+
 	public void write() throws InterruptedException, IOException {
 
 		/** file that in which the results will be written */
@@ -58,7 +58,7 @@ public class TopologicalRelationsWriter {
 		/** terminate progress bar and close file */
 		out.close();
 	}
-	
+
 	private void spatialOps() {
 		List<Triple> topoRelations = new ArrayList<Triple>();
 		int current = 0;
@@ -131,5 +131,5 @@ public class TopologicalRelationsWriter {
 			RDFDataMgr.writeTriples(out, topoRelations.iterator());
 		}
 	}
-	
+
 }
