@@ -6,4 +6,4 @@ target/
 logs/
 .idea/
 out/
-src/main/main.iml
+*.iml
