@@ -10,7 +10,7 @@ public class LabelProcessing {
 	
 	public static String processDataSourceLabel(String label, String source) {
 		
-		if(source.equals("kallikratis"))
+		if(source.equals("gag"))
 			return processKallikratisLabel(label);
 		else if (source.equals("kapodistrias"))
       return processKapodistriasLabel(label);

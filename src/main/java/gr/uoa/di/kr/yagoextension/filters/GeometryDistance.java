@@ -1,53 +1,46 @@
 package gr.uoa.di.kr.yagoextension.filters;
 
-/**
- * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
- * kr.di.uoa.gr
- */
-
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import com.vividsolutions.jts.geom.Geometry;
+import gr.uoa.di.kr.yagoextension.model.LabelMatches;
+import org.locationtech.jts.geom.Geometry;
 
-import gr.uoa.di.kr.yagoextension.structures.Entity;
-import gr.uoa.di.kr.yagoextension.structures.GeometryMatchesStructure;
-import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
+import gr.uoa.di.kr.yagoextension.model.Entity;
+import gr.uoa.di.kr.yagoextension.model.GeometryMatches;
 
-/** 
+/*
  *  Input: Matches produced by label similarity filter.
  *  Output: Matches between entities that are near to each other (threshold)
- *  Every entity can be matched with only one other entity
+ *  Every entity can be matched with at most one other entity
  */
 
 public class GeometryDistance {
 	
 	public static double threshold = 0.2;
 	
-	public static MatchesStructure filter(MatchesStructure labelMatches, Map<String, Entity> yago, Map<String, Entity> ds) {
+	public static GeometryMatches filter(LabelMatches labelMatches) {
 		
-		MatchesStructure geomMatches = new GeometryMatchesStructure();
+		GeometryMatches geomMatches = new GeometryMatches();
 		
-		Set<String> lmKeys = labelMatches.getKeys();
+		Set<Entity> lmKeys = labelMatches.getKeys();
 		
-		for(String lmKey : lmKeys) {
-			Geometry yagoGeom = yago.get(lmKey).getGeometry();
-			List<String> lmValue = labelMatches.getValueByKey(lmKey);
-			double bestDist = yagoGeom.distance(ds.get(lmValue.get(0)).getGeometry());
-			String best = lmValue.get(0);
+		for(Entity yagoEntity : lmKeys) {
+			Geometry yagoGeom = yagoEntity.getGeometry();
+			List<Entity> datasourceEntities = labelMatches.getValueByKey(yagoEntity);
+			double bestDist = threshold+1;
+			Entity best = null;
 			
-			for(String l : lmValue.subList(1, lmValue.size())) {
-				double curDist = yagoGeom.distance(ds.get(l).getGeometry());
+			for(Entity datasourceEntity : datasourceEntities) {
+				double curDist = yagoGeom.distance(datasourceEntity.getGeometry());
 				if(curDist < bestDist) {
 					bestDist = curDist;
-					best = l;
+					best = datasourceEntity;
 				}
 			}
 			
 			if(bestDist <= threshold) {
-				geomMatches.addMatch(lmKey, best, bestDist);
+				geomMatches.addMatch(best, yagoEntity, bestDist);
 			}
 			
 		}

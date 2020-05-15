@@ -7,3 +7,4 @@ logs/
 .idea/
 out/
 src/main/main.iml
+src/main/resources/execution.properties

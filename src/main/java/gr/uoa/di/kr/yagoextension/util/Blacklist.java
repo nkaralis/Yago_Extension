@@ -1,31 +1,33 @@
 package gr.uoa.di.kr.yagoextension.util;
 
-/**
- * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis 
- * kr.di.uoa.gr
- */
-
-import java.util.Map;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import gr.uoa.di.kr.yagoextension.structures.Entity;
+import gr.uoa.di.kr.yagoextension.model.Entity;
 
 public class Blacklist {
 	
-	public static void removeMatchedEntities(Map<String, Entity> yago, Map<String, Entity> ds, String matchesFile) {
+	public static void removeMatchedEntities(Set<Entity> yago, Set<Entity> ds, String[] matchesFile) {
 
-		Model matches = RDFDataMgr.loadModel(matchesFile);
-		StmtIterator stmts = matches.listStatements();
-		while(stmts.hasNext()) {
-			Statement stmt = stmts.next();
-			String subj = stmt.getSubject().getURI();
-			String objURI = stmt.getObject().asResource().getURI();
-			String obj = objURI.split("/")[4].split(">")[0];
-			yago.remove("<"+obj+">");
-			ds.remove(subj);
-		}
+		Model matches = ModelFactory.createDefaultModel();
+		Arrays.stream(matchesFile).forEach(file -> matches.read(file.trim()));
+		Set<Entity> yagoToRemove = new HashSet<>();
+		Set<Entity> dsToRemove = new HashSet<>();
+		yago.forEach(entity -> {
+			RDFNode resource = ResourceFactory.createResource(entity.getURI());
+			if(matches.containsResource(resource))
+				yagoToRemove.add(entity);
+		});
+		ds.forEach(entity -> {
+			RDFNode resource = ResourceFactory.createResource(entity.getURI());
+			if(matches.containsResource(resource))
+				dsToRemove.add(entity);
+		});
+		yago.removeAll(yagoToRemove);
+		ds.removeAll(dsToRemove);
 	}
+
 }

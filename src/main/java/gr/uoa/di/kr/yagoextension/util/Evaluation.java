@@ -1,42 +1,36 @@
 package gr.uoa.di.kr.yagoextension.util;
 
-import gr.uoa.di.kr.yagoextension.structures.Entity;
-import gr.uoa.di.kr.yagoextension.structures.MatchesStructure;
+import gr.uoa.di.kr.yagoextension.model.Entity;
+import gr.uoa.di.kr.yagoextension.model.GeometryMatches;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-/**
- * This class is part of the YAGO Extension Project
- * Author: Nikos Karalis
- * kr.di.uoa.gr
- */
+import java.util.*;
 
 public class Evaluation {
 
-  public static void generate(MatchesStructure matches, int n, Map<String, Entity> yagoEnts, Map<String, Entity> dsEnts,
-                              String file, String method, String preprocess) throws FileNotFoundException, UnsupportedEncodingException {
+  public static void run(GeometryMatches matches, int n, String file, String method, String preprocess)
+    throws FileNotFoundException, UnsupportedEncodingException {
 
     PrintWriter out = new PrintWriter(file, "UTF-8");
-    List<String> keys  = new ArrayList<String>(matches.getKeys());
-    int toEval = Integer.max(n, keys.size()/100 );
-    Collections.shuffle(keys);
-    List<String> keysEval = keys.subList(0, Integer.min(keys.size(), toEval));
-    for(String key : keysEval) {
-    	String yagoEnt = matches.getValueByKey(key).get(0);
-    	double best = 0.0;
-    	String dsBest = null;
-    	String yagoBest = null;
-    	String yagoBestURI = null;
-    	for(String dsLabel : dsEnts.get(key).getLabels()) {
-    	  for(String yagoLabel : yagoEnts.get(yagoEnt).getLabels()) {
-    	    double sim = StringSimilarity.similarity(dsLabel, yagoLabel, method);
+    /* get a random sublist (subset) of the matches */
+    List<Entity> dsEntities  = new ArrayList<>(matches.getKeys());
+    int toEval = Integer.max(n, dsEntities.size()/100 );
+    Collections.shuffle(dsEntities);
+    List<Entity> keysEval = dsEntities.subList(0, Integer.min(dsEntities.size(), toEval));
+    /* for each match find the labels that produce the best label similarity score */
+    for(Entity dsEntity : keysEval) {
+      Entity yagoEntity = matches.getValueByKey(dsEntity);
+      double best = 0.0;
+      String dsBest = null;
+      String yagoBest = null;
+      for(String dsLabel : dsEntity.getLabels()) {
+        for(String yagoLabel : yagoEntity.getLabels()) {
+          double sim = StringSimilarity.similarity(dsLabel, yagoLabel, method);
+          double upperCaseSim =
+            StringSimilarity.similarity(yagoLabel.toUpperCase(), dsLabel.toUpperCase(), method);
+          sim = Math.max(upperCaseSim, sim);
           if(preprocess != null) {
             String ylProc = LabelProcessing.processYagoLabel(yagoLabel);
             String dlProc = LabelProcessing.processDataSourceLabel(dsLabel, preprocess);
@@ -44,15 +38,14 @@ public class Evaluation {
             if(tempSim > sim)
               sim = tempSim;
           }
-    	    if(sim > best) {
-    	      dsBest = dsLabel;
-    	      yagoBest = yagoLabel;
-    	      yagoBestURI = yagoEnt;
-    	      best = sim;
+          if(sim > best) {
+            dsBest = dsLabel;
+            yagoBest = yagoLabel;
+            best = sim;
           }
         }
       }
-    	out.println(dsBest+"\t"+yagoBest+"\t"+yagoBestURI);
+      out.format("%1$-40s | %2$-40s | %3$s %n", yagoBest, dsBest, yagoEntity.getURI());
     }
     out.close();
   }
