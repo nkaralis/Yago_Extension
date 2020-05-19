@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import gr.uoa.di.kr.yagoextension.vocabulary.RDFVocabulary;
-import javafx.util.Pair;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
@@ -48,29 +47,29 @@ public class TopologicalRelationsGenerator {
 		Property asWkt = ResourceFactory.createProperty(RDFVocabulary.AS_WKT);
 
 		logger.info("Preparing data");
-		List<Pair<String, String>> subjGeomPairs = new ArrayList<>();
+		List<String []> subjGeomPairs = new ArrayList<>();
 		StmtIterator stmtsIter = data.listStatements(null, hasGeometry ,(RDFNode)null);
 		while (stmtsIter.hasNext()) {
 			Statement statement = stmtsIter.next();
 			String uri = statement.getSubject().getURI();
 			Resource geometry = statement.getObject().asResource();
 			String wkt = geometry.getProperty(asWkt).getObject().asLiteral().getString();
-			subjGeomPairs.add(new Pair<>(uri, wkt));
+			subjGeomPairs.add(new String[]{uri, wkt});
 		}
 		logger.info("Generating topological relations");
 		WKTReader wktReader = new WKTReader();
 		final Integer[] progress = new Integer[]{0, 1};
-		List<Pair<String, String>> shuffledSGP = new ArrayList<>(subjGeomPairs);
+		List<String[]> shuffledSGP = new ArrayList<>(subjGeomPairs);
 		Collections.shuffle(shuffledSGP);
 		shuffledSGP.parallelStream().forEach(pair -> {
 			try {
 				int pairPos = subjGeomPairs.indexOf(pair);
-				String subj = pair.getKey();
+				String subj = pair[0];
 				logger.info("Processing item: "+pairPos);
-				Geometry geom = wktReader.read(pair.getValue());
+				Geometry geom = wktReader.read(pair[1]);
 				for (int i = pairPos + 1; i < subjGeomPairs.size() - 1; i++) {
-					String curSubj = subjGeomPairs.get(i).getKey();
-					Geometry curGeom = wktReader.read(subjGeomPairs.get(i).getValue());
+					String curSubj = subjGeomPairs.get(i)[0];
+					Geometry curGeom = wktReader.read(subjGeomPairs.get(i)[1]);
 					if(geom.buffer(0.0).touches(curGeom.buffer(0.0))) {
 						topologicalRelations.enterCriticalSection(Lock.WRITE);
 						topologicalRelations.add(ResourceFactory.createResource(subj), sfTouches, ResourceFactory.createResource(curSubj));
