@@ -57,7 +57,7 @@ class OSRepository extends Repository<OSEntity> implements RDFReader {
         if(predicate.equals(label))
           labels.add(object);
         else if(predicate.equals(descriptionProperty))
-          description = "OS_"+object;
+          description = "OS_"+object.replace(" ","");
         else if(predicate.equals(id))
           osID = object;
         else if(predicate.equals(areaCodeProperty))
